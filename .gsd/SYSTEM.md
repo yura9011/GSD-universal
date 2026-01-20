@@ -191,7 +191,7 @@ See `.kiro/agents/README.md` for complete documentation.
 
 ## Kiro Slash Commands
 
-GSD commands are available as Kiro slash commands in `.claude/commands/`:
+GSD commands are available as Kiro slash commands in `.kiro/commands/`:
 
 **Core Workflow**: `/new-project`, `/map`, `/plan`, `/execute`, `/verify`, `/progress`
 **Phase Management**: `/discuss-phase`, `/research-phase`, `/add-phase`, etc.
@@ -204,7 +204,7 @@ All slash commands reference workflows in `.gsd/workflows/` for compatibility.
 **With Kiro**: Use slash commands for argument hints and bash pre-execution
 **Without Kiro**: Use workflows directly
 
-See `.claude/commands/README.md` for complete documentation.
+See `.kiro/commands/README.md` for complete documentation.
 
 ## Quality Gates
 
