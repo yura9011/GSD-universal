@@ -1,190 +1,246 @@
-# Phase 3 Research: Visual Overlay
+# Phase 3 Research: Subagent Integration
 
-**Date**: 2026-01-19
-**Phase**: 3 - Visual Overlay
-**Objective**: Research transparent overlay implementation for Windows
-
-## Problem Statement
-
-Need to create a transparent, always-on-top overlay window that:
-- Shows translator state (Idle, Recording, Processing, Sending)
-- Stays visible over games and applications
-- Is configurable (position, visibility)
-- Has minimal performance impact
-- Works on Windows
-
-## Research Questions
-
-1. What library should we use for transparent overlay on Windows?
-2. How to make window always-on-top and click-through?
-3. How to update overlay from background thread (translator)?
-4. How to make it configurable (position, show/hide)?
-
-## Options Evaluated
-
-### Option 1: tkinter (Built-in)
-**Pros:**
-- Already using for config UI
-- No new dependencies
-- Cross-platform
-- Simple API
-
-**Cons:**
-- Limited transparency control on Windows
-- Can be clunky for overlays
-- Not designed for gaming overlays
-
-**Verdict:** ✅ RECOMMENDED - Good enough for v1.2, already in use
-
-### Option 2: PyQt5/PySide6
-**Pros:**
-- Excellent transparency support
-- Professional appearance
-- Rich widget library
-
-**Cons:**
-- Large dependency (~50MB)
-- Overkill for simple overlay
-- Learning curve
-
-**Verdict:** ❌ Too heavy for this use case
-
-### Option 3: pygame
-**Pros:**
-- Good for gaming overlays
-- Hardware accelerated
-
-**Cons:**
-- Not designed for UI overlays
-- Requires game loop
-- Overkill
-
-**Verdict:** ❌ Wrong tool for the job
-
-## Decision: tkinter with Transparency
-
-Use tkinter with these techniques:
-- `root.attributes('-alpha', 0.9)` for transparency
-- `root.attributes('-topmost', True)` for always-on-top
-- `root.overrideredirect(True)` for borderless window
-- `root.attributes('-transparentcolor', 'black')` for click-through (Windows)
-
-## Implementation Approach
-
-### Architecture
-```
-OverlayWindow (tkinter.Toplevel)
-├── State display (Label with colored background)
-├── Position tracking (save to config)
-└── Thread-safe updates (queue-based)
-```
-
-### State Colors
-- **Idle**: Gray (#808080)
-- **Recording**: Red (#FF0000)
-- **Processing**: Yellow (#FFD700)
-- **Sending**: Green (#00FF00)
-
-### Configuration
-Add to config.json:
-```json
-{
-  "overlay": {
-    "enabled": true,
-    "position": {"x": 100, "y": 100},
-    "opacity": 0.9,
-    "size": {"width": 150, "height": 50}
-  }
-}
-```
-
-### Thread Safety
-Use queue for state updates:
-```python
-# Translator thread
-overlay_queue.put(("state", "Recording"))
-
-# Overlay thread (tkinter main loop)
-def check_queue():
-    while not overlay_queue.empty():
-        msg_type, value = overlay_queue.get()
-        update_display(value)
-    root.after(100, check_queue)
-```
-
-## Technical Decisions
-
-### 1. Window Positioning
-- Save position to config.json on drag
-- Restore position on startup
-- Default: top-right corner (x=screen_width-200, y=100)
-
-### 2. Draggable Window
-- Bind mouse events to title bar area
-- Track drag offset
-- Update position in real-time
-
-### 3. Minimize/Hide
-- Add small "X" button to hide
-- Add to system tray menu: "Show/Hide Overlay"
-- Save visibility state to config
-
-### 4. Performance
-- Update only on state change (not continuous)
-- Use after() for queue checking (100ms interval)
-- Minimal redraws
-
-## Dependencies
-
-None! tkinter is built-in to Python.
-
-## Risks & Mitigations
-
-**Risk 1**: Overlay blocks game input
-- **Mitigation**: Use `-transparentcolor` for click-through on Windows
-- **Fallback**: Make overlay very small and position in corner
-
-**Risk 2**: Overlay not visible in fullscreen games
-- **Mitigation**: Document that borderless windowed mode works best
-- **Future**: Consider DirectX overlay (Phase 4+)
-
-**Risk 3**: Thread safety issues with tkinter
-- **Mitigation**: Use queue-based communication
-- **Never** call tkinter methods from non-main thread
-
-## Implementation Plan
-
-### Wave 1: Basic Overlay
-- Create OverlayWindow class
-- Display current state with colors
-- Always-on-top, borderless
-
-### Wave 2: Configuration & Dragging
-- Add overlay config to config.json
-- Make window draggable
-- Save/restore position
-
-### Wave 3: Integration
-- Connect to VoiceTranslator state changes
-- Add overlay toggle to config UI
-- Update main.py to launch overlay
-
-## References
-
-- tkinter transparency: `root.attributes('-alpha', value)`
-- Always-on-top: `root.attributes('-topmost', True)`
-- Borderless: `root.overrideredirect(True)`
-- Click-through (Windows): `root.attributes('-transparentcolor', 'color')`
-
-## Success Criteria
-
-- [ ] Overlay shows 4 states with distinct colors
-- [ ] Window stays on top of other applications
-- [ ] Position is configurable and persistent
-- [ ] Can be hidden/shown via config or hotkey
-- [ ] No performance impact on translator
-- [ ] Thread-safe state updates
+**Phase**: 3 - Subagent Integration
+**Created**: 2026-01-20
+**Research Level**: 2 (Standard Research)
 
 ---
 
-**Conclusion**: tkinter is sufficient for v1.2 overlay. Simple, no new dependencies, cross-platform. Use queue-based communication for thread safety.
+## Research Question
+
+How to implement Kiro subagents for high-context operations in GSD workflows?
+
+---
+
+## Findings
+
+### 1. Subagent Purpose
+
+**Problem**: Operations like `/map` and `/research-phase` consume massive context:
+- Reading 20+ files
+- Analyzing architecture
+- Searching documentation
+- All this "noise" pollutes main conversation
+
+**Solution**: Subagents with `context: fork`
+- Run in separate context window
+- Have their own conversation history
+- Only summary returns to main conversation
+- Context is destroyed after completion
+
+### 2. Subagent Types (from resarch/subagents.md)
+
+**Built-in Subagents**:
+- `Explore`: Fast, read-only codebase exploration (Haiku model)
+- `Plan`: Research during plan mode (read-only)
+- `general-purpose`: Full capabilities for complex tasks
+
+**Custom Subagents** (what we'll create):
+- Defined in `.kiro/agents/` directory
+- Markdown files with YAML frontmatter
+- Can specify tools, model, permissions
+- Can include hooks scoped to subagent
+
+### 3. Subagent Configuration
+
+```yaml
+---
+name: subagent-name
+description: When to use this subagent
+tools: Read, Grep, Glob
+disallowedTools: Write, Edit
+model: sonnet | haiku | opus | inherit
+permissionMode: default | plan | dontAsk
+context: fork
+---
+
+# Subagent Name
+
+System prompt for the subagent.
+Instructions on what to do and how to report results.
+```
+
+### 4. Context Fork Pattern
+
+**Without context:fork** (normal):
+- Subagent shares main conversation
+- All reads/searches visible in main context
+- Context window fills quickly
+
+**With context:fork**:
+- Subagent gets fresh context
+- Reads/searches happen in fork
+- Only final result returns
+- Fork is destroyed
+
+**Example**:
+```
+Main: "Analyze this codebase"
+  ↓
+Fork: [reads 50 files, analyzes patterns]
+  ↓
+Main: Receives summary (200 tokens instead of 50,000)
+```
+
+### 5. GSD Operations for Subagents
+
+Based on ROADMAP and research:
+
+**Priority 1 (Must-have)**:
+1. **map-explorer**: For `/map` command (codebase analysis)
+2. **research-agent**: For `/research-phase` command
+3. **verify-agent**: For `/verify` command (parallel verification)
+
+**Why these operations**:
+- `/map`: Reads entire codebase, analyzes architecture
+- `/research-phase`: Reads docs, searches web, analyzes libraries
+- `/verify`: Runs multiple verifications in parallel
+
+### 6. Subagent Tool Restrictions
+
+**map-explorer**:
+- Tools: Read, Grep, Glob, Bash (read-only commands)
+- Disallowed: Write, Edit
+- Model: Haiku (fast, cheap for exploration)
+- Permission: plan (read-only mode)
+
+**research-agent**:
+- Tools: Read, Grep, WebSearch, WebFetch
+- Disallowed: Write, Edit
+- Model: Sonnet (needs reasoning for research)
+- Permission: default
+
+**verify-agent**:
+- Tools: Read, Bash (for running tests/linters)
+- Disallowed: Write, Edit
+- Model: Haiku (fast verification)
+- Permission: dontAsk (auto-deny prompts)
+
+### 7. Integration with GSD Workflows
+
+**Update workflows to use subagents**:
+
+`/map` workflow:
+```markdown
+## 2. Analyze Codebase
+
+Use map-explorer subagent:
+- Reads all source files
+- Identifies tech stack
+- Analyzes architecture patterns
+- Detects technical debt
+- Returns summary to ARCHITECTURE.md
+```
+
+`/research-phase` workflow:
+```markdown
+## 2. Conduct Research
+
+Use research-agent subagent:
+- Searches documentation
+- Analyzes libraries
+- Compares alternatives
+- Returns findings to RESEARCH.md
+```
+
+`/verify` workflow:
+```markdown
+## 2. Run Verifications
+
+Use verify-agent subagent (parallel):
+- Agent 1: Run unit tests
+- Agent 2: Check code coverage
+- Agent 3: Run linters
+- Consolidate results
+```
+
+### 8. Subagent Lifecycle
+
+1. **Invocation**: Claude delegates task to subagent
+2. **Fork**: New context created (if context:fork)
+3. **Execution**: Subagent works independently
+4. **Completion**: Summary returned to main
+5. **Cleanup**: Fork destroyed
+
+### 9. Resuming Subagents
+
+Subagents can be resumed:
+```
+User: "Use map-explorer to analyze auth module"
+[Subagent completes, returns agent ID]
+
+User: "Continue that analysis for payment module"
+[Claude resumes same subagent with full history]
+```
+
+Transcripts stored in: `~/.claude/projects/{project}/{session}/subagents/agent-{id}.jsonl`
+
+---
+
+## Recommendations
+
+### Phase 3 Implementation Strategy
+
+**Wave 1: Foundation**
+- Create `.kiro/agents/` directory structure
+- Create subagent template
+- Document subagent usage
+
+**Wave 2: Core Subagents**
+- Implement map-explorer subagent
+- Implement research-agent subagent
+- Implement verify-agent subagent
+
+**Wave 3: Integration**
+- Update GSD workflows to use subagents
+- Test with real operations
+- Document when to use subagents vs main conversation
+
+### Subagent Organization
+
+```
+.kiro/agents/
+├── README.md
+├── map-explorer.md
+├── research-agent.md
+└── verify-agent.md
+```
+
+### Testing Strategy
+
+1. Test map-explorer with real codebase
+2. Verify context savings (main conversation stays clean)
+3. Test research-agent with web searches
+4. Test verify-agent with parallel execution
+5. Measure context window usage before/after
+
+---
+
+## Open Questions
+
+1. Should subagents be project-level or user-level?
+   - **Recommendation**: Project-level (`.kiro/agents/`)
+   - Reason: Team shares same subagent configurations
+
+2. What model for each subagent?
+   - **map-explorer**: Haiku (fast, cheap exploration)
+   - **research-agent**: Sonnet (needs reasoning)
+   - **verify-agent**: Haiku (fast verification)
+
+3. How to handle subagent failures?
+   - **Recommendation**: Subagent reports error to main
+   - Main conversation can retry or adjust approach
+
+---
+
+## References
+
+- `resarch/subagents.md` - Complete Kiro subagents documentation
+- `resarch/ideas.md` - Integration concepts
+- Kiro docs: https://code.claude.com/docs/sub-agents
+
+---
+
+## Next Steps
+
+Proceed to planning with this research as foundation.

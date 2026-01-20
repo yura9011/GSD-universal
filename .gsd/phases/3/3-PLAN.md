@@ -1,198 +1,203 @@
 ---
 phase: 3
 plan: 3
-wave: 3
-milestone: v1.2
+wave: 2
 ---
 
-# Plan 3.3: Integrate Overlay with Translator
+# Plan 3.3: Research & Verify Subagents
 
 ## Objective
-Connect overlay to VoiceTranslator state changes and integrate with main.py, completing the visual feedback system for the translator.
+
+Create subagents for `/research-phase` and `/verify` commands with context fork.
 
 ## Context
-- src/overlay_window.py - Overlay implementation (from Plans 3.1, 3.2)
-- src/voice_translator.py - Main translator class
-- src/main.py - Application entry point
-- src/ptt_controller.py - PTT state machine
+
+- ROADMAP.md (Phase 3: research and verify subagents)
+- .gsd/phases/3/RESEARCH.md (Subagent specifications)
+- .gsd/workflows/research-phase.md
+- .gsd/workflows/verify.md
 
 ## Tasks
 
 <task type="auto">
-  <name>Add overlay state updates to VoiceTranslator</name>
-  <files>src/voice_translator.py</files>
+  <name>Create research-agent subagent</name>
+  <files>.kiro/agents/research-agent.md</files>
   <action>
-Update VoiceTranslator to send state updates to overlay:
-
-1. **Add overlay parameter to __init__:**
-```python
-    def __init__(self, input_device=None, output_device=None, 
-                 source_lang='es', target_lang='pt', sample_rate=16000,
-                 overlay=None):
-        # ... existing code ...
-        self.overlay = overlay
-```
-
-2. **Add state update method:**
-```python
-    def _update_overlay(self, state):
-        """Update overlay state if available.
-        
-        Args:
-            state: One of 'idle', 'recording', 'processing', 'sending'
-        """
-        if self.overlay:
-            self.overlay.set_state(state)
-```
-
-3. **Add overlay updates in _ptt_loop() method:**
-
-Find the PTT state machine and add overlay updates:
-```python
-        # When starting recording
-        if self.ptt_controller.state == PTTState.RECORDING:
-            self._update_overlay('recording')
-        
-        # When processing
-        if audio_data is not None:
-            self._update_overlay('processing')
-            # ... transcription code ...
-        
-        # When sending
-        if translated_text:
-            self._update_overlay('sending')
-            # ... TTS and playback ...
-        
-        # Back to idle
-        self._update_overlay('idle')
-```
-
-4. **For continuous mode, add in _continuous_loop():**
-```python
-        # When speech detected
-        if self.vad.is_speech(audio_chunk):
-            self._update_overlay('recording')
-        
-        # When transcribing
-        if transcription:
-            self._update_overlay('processing')
-        
-        # When sending
-        if translated_text:
-            self._update_overlay('sending')
-        
-        # Back to idle
-        self._update_overlay('idle')
-```
-
-IMPORTANT:
-- Check if overlay exists before calling
-- Update at each state transition
-- Don't block on overlay updates (queue-based)
-- Match states to overlay color scheme
+    Create research-agent subagent:
+    
+    ```yaml
+    ---
+    name: research-agent
+    description: Conducts technical research for phase planning. Use for /research-phase or when researching libraries, APIs, or technical decisions.
+    tools: Read, Grep, WebSearch, WebFetch
+    disallowedTools: Write, Edit
+    model: sonnet
+    permissionMode: default
+    context: fork
+    ---
+    
+    # Research Agent
+    
+    You are a technical research specialist. Your task is to gather information for informed decision-making.
+    
+    ## Your Task
+    
+    Research the specified topic and provide:
+    1. Available options/alternatives
+    2. Pros and cons of each
+    3. Recommendations
+    4. Implementation considerations
+    
+    ## Process
+    
+    1. Understand research question
+    2. Search for relevant documentation
+    3. Compare alternatives
+    4. Analyze trade-offs
+    5. Form recommendations
+    
+    ## Output Format
+    
+    ### Research Question
+    [Restate the question]
+    
+    ### Options Analyzed
+    1. Option A
+       - Pros: [list]
+       - Cons: [list]
+    2. Option B
+       - Pros: [list]
+       - Cons: [list]
+    
+    ### Recommendation
+    [Your recommendation with rationale]
+    
+    ### Implementation Notes
+    [Key considerations for implementation]
+    
+    Keep summary focused on decision-making.
+    ```
+    
+    WHY sonnet: Needs reasoning for research
+    WHY context:fork: Web searches and doc reads stay in fork
   </action>
-  <verify>python -m py_compile src/voice_translator.py</verify>
-  <done>Overlay state updates integrated into VoiceTranslator</done>
+  <verify>type .kiro\agents\research-agent.md</verify>
+  <done>Research-agent exists with complete configuration</done>
 </task>
 
 <task type="auto">
-  <name>Update main.py to launch overlay</name>
-  <files>src/main.py</files>
+  <name>Create verify-agent subagent</name>
+  <files>.kiro/agents/verify-agent.md</files>
   <action>
-Update main.py to create and manage overlay window:
-
-1. **Add import at top:**
-```python
-from overlay_window import OverlayWindow
-import tkinter as tk
-```
-
-2. **After loading config and before translator initialization:**
-```python
-    # Create tkinter root for overlay (if enabled)
-    overlay = None
-    tk_root = None
+    Create verify-agent subagent:
     
-    if config.get('overlay', {}).get('enabled', True):
-        tk_root = tk.Tk()
-        tk_root.withdraw()  # Hide root window
-        
-        overlay = OverlayWindow(config)
-        overlay.create_window()
-        
-        print("[INFO] Overlay window created")
-```
-
-3. **Pass overlay to VoiceTranslator:**
-```python
-        # Initialize translator with config and overlay
-        translator = VoiceTranslator(
-            input_device=input_device,
-            output_device=output_device,
-            source_lang=config['translation']['source_lang'],
-            target_lang=config['translation']['target_lang'],
-            sample_rate=config['audio']['sample_rate'],
-            overlay=overlay
-        )
-```
-
-4. **Update signal handler to cleanup overlay:**
-```python
-        def signal_handler(sig, frame):
-            print("\n")
-            print("[STOPPED] Stopping translator...")
-            translator.stop()
-            
-            # Cleanup overlay
-            if overlay:
-                overlay.destroy()
-            if tk_root:
-                tk_root.quit()
-            
-            print()
-            print("Goodbye!")
-            sys.exit(0)
-```
-
-5. **Replace the wait loop with tkinter mainloop:**
-```python
-        # Start translator
-        translator.start()
-        
-        print("Press Ctrl+C to stop")
-        print()
-        
-        # Run tkinter main loop if overlay exists, otherwise wait
-        if tk_root:
-            tk_root.mainloop()
-        else:
-            # Original wait logic for no overlay
-            try:
-                while True:
-                    signal.pause()
-            except AttributeError:
-                try:
-                    while True:
-                        input()
-                except EOFError:
-                    pass
-```
-
-IMPORTANT:
-- Create tk_root before overlay (required for Toplevel)
-- Hide tk_root (withdraw)
-- Pass overlay to translator
-- Use tk_root.mainloop() to keep overlay alive
-- Cleanup overlay on exit
+    ```yaml
+    ---
+    name: verify-agent
+    description: Runs verification checks and tests. Use for /verify command or when validating implementations.
+    tools: Read, Bash
+    disallowedTools: Write, Edit
+    model: haiku
+    permissionMode: dontAsk
+    context: fork
+    ---
+    
+    # Verify Agent
+    
+    You are a verification specialist. Your task is to validate implementations against requirements.
+    
+    ## Your Task
+    
+    Run verification checks:
+    1. Execute tests
+    2. Run linters
+    3. Check code coverage
+    4. Validate against requirements
+    
+    ## Process
+    
+    1. Identify what needs verification
+    2. Run appropriate checks
+    3. Collect evidence
+    4. Report results
+    
+    ## Output Format
+    
+    ### Verification Results
+    
+    #### Tests
+    - Status: PASS/FAIL
+    - Evidence: [command output]
+    
+    #### Linters
+    - Status: PASS/FAIL
+    - Evidence: [command output]
+    
+    #### Requirements
+    - [x] Requirement 1 - VERIFIED
+    - [ ] Requirement 2 - FAILED (reason)
+    
+    ### Verdict
+    PASS | FAIL
+    
+    ### Issues Found
+    [List any issues]
+    
+    Provide concrete evidence for all claims.
+    ```
+    
+    WHY haiku: Fast verification
+    WHY dontAsk: Auto-deny prompts, run autonomously
+    WHY context:fork: Test output stays in fork
   </action>
-  <verify>python -m py_compile src/main.py</verify>
-  <done>Overlay integrated into main.py with proper lifecycle management</done>
+  <verify>type .kiro\agents\verify-agent.md</verify>
+  <done>Verify-agent exists with complete configuration</done>
+</task>
+
+<task type="auto">
+  <name>Update workflows to use subagents</name>
+  <files>
+    .gsd/workflows/research-phase.md
+    .gsd/workflows/verify.md
+  </files>
+  <action>
+    Update workflows to reference subagents:
+    
+    **research-phase.md**: Add subagent usage
+    ```markdown
+    ## 2. Conduct Research
+    
+    **With Kiro**: Use research-agent subagent:
+    ```
+    Use research-agent to research [topic]
+    ```
+    
+    **verify.md**: Add subagent usage
+    ```markdown
+    ## 2. Run Verifications
+    
+    **With Kiro**: Use verify-agent subagent:
+    ```
+    Use verify-agent to verify phase [N]
+    ```
+    
+    For parallel verification, can spawn multiple verify-agents.
+    ```
+    
+    WHY update: Guides users to leverage subagents
+  </action>
+  <verify>findstr /C:"research-agent" .gsd\workflows\research-phase.md</verify>
+  <done>Workflows reference subagents appropriately</done>
 </task>
 
 ## Success Criteria
-- [ ] Overlay shows correct state during translation
-- [ ] State changes: idle → recording → processing → sending → idle
-- [ ] Overlay can be disabled via config
-- [ ] Overlay persists position across restarts
-- [ ] No crashes or threading issues
-- [ ] Overlay updates in real-time during operation
+
+- [ ] research-agent subagent exists
+- [ ] verify-agent subagent exists
+- [ ] Both use context:fork
+- [ ] Workflows reference subagents
+- [ ] Changes committed to git
+
+## Notes
+
+These subagents complete the context management strategy for GSD.
