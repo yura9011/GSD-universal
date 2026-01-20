@@ -3,8 +3,8 @@
 ## Current Position
 
 - **Milestone**: kiro-integration
-- **Phase**: 3 (Subagent Integration)
-- **Status**: ✅ Complete - Ready for Phase 4
+- **Phase**: 4 (Command Modernization)
+- **Status**: Planning complete - Ready for execution
 - **Last Updated**: 2026-01-20
 
 ## Context
@@ -29,12 +29,19 @@ Phases 1-3 successfully implemented:
 - ✅ Workflows updated to reference subagents
 - ✅ Complete documentation and integration
 
+**Phase 4 - Command Modernization**:
+- ✅ Research complete (slash command format, migration strategy)
+- ✅ Plans created (3 waves: core, management, utilities)
+- Plan 4.1: Core workflow commands (6)
+- Plan 4.2: Management commands (10)
+- Plan 4.3: Session & utility commands (9) + documentation
+
 ## Next Steps
 
-1. Plan Phase 4 (Command Modernization) with `/plan 4`
-2. Migrate 25 GSD commands to Kiro slash command format
-3. Add frontmatter with allowed-tools and argument-hint
-4. Test command integration
+1. Execute `/execute 4` to implement all Phase 4 plans
+2. Create 25 slash commands in `.claude/commands/`
+3. Test command integration
+4. Proceed to Phase 5 (Documentation & Testing)
 
 ## Decisions Made
 
@@ -44,6 +51,8 @@ Phases 1-3 successfully implemented:
 - Migración gradual manteniendo compatibilidad con workflows existentes
 - Context fork pattern para operaciones de alto volumen (99% context savings)
 - Haiku para exploración, Sonnet para research, dontAsk para verificación autónoma
+- Slash commands referencian workflows existentes para portabilidad
+- Organización en subdirectorios (phase/, milestone/, session/, util/)
 
 ## Open Questions
 
