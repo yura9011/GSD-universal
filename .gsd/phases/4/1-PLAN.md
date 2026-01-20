@@ -2,308 +2,270 @@
 phase: 4
 plan: 1
 wave: 1
-milestone: v1.2
 ---
 
-# Plan 4.1: Game Detection System
+# Plan 4.1: Core Workflow Commands
 
 ## Objective
-Create game detection system using psutil to identify running games and load their PTT profiles. This provides the foundation for automatic PTT key pressing.
+
+Create slash commands for the 6 core GSD workflow commands that reference existing workflow files.
 
 ## Context
-- .gsd/phases/4/RESEARCH.md - Game detection research
-- src/config_loader.py - Config management
-- ROADMAP.md - Phase 4 requirements
+
+- .gsd/workflows/new-project.md
+- .gsd/workflows/map.md
+- .gsd/workflows/plan.md
+- .gsd/workflows/execute.md
+- .gsd/workflows/verify.md
+- .gsd/workflows/progress.md
+- .gsd/phases/4/RESEARCH.md (migration strategy)
 
 ## Tasks
 
 <task type="auto">
-  <name>Add psutil to requirements</name>
-  <files>requirements.txt, requirements-lock.txt</files>
+  <name>Create directory structure</name>
+  <files>.claude/commands/</files>
   <action>
-Add to requirements.txt after keyboard library:
-
-```
-# Game Integration (Phase 4 - v1.2)
-psutil>=5.9.0
-```
-
-Add to requirements-lock.txt (alphabetically):
-```
-psutil==6.1.1
-```
-
-IMPORTANT:
-- Maintain existing formatting
-- Add comment header for Phase 4
-- Keep alphabetical order in lock file
+    Create `.claude/commands/` directory for project-level slash commands.
+    
+    WHY project-level: Commands are specific to GSD framework, should be shared with team via git.
   </action>
-  <verify>Select-String -Path requirements.txt -Pattern "psutil"</verify>
-  <done>psutil added to requirements files</done>
+  <verify>dir .claude\commands</verify>
+  <done>Directory exists</done>
 </task>
 
 <task type="auto">
-  <name>Create game_detector.py with GameDetector class</name>
-  <files>src/game_detector.py</files>
+  <name>Create /new-project command</name>
+  <files>.claude/commands/new-project.md</files>
   <action>
-Create src/game_detector.py with GameDetector class:
-
-```python
-"""Game detection for automatic PTT integration.
-
-Detects running games and provides their PTT key profiles.
-"""
-
-import psutil
-import time
-from typing import Optional, Dict, List
-
-
-# Default game profiles
-DEFAULT_GAME_PROFILES = {
-    "dota2": {
-        "name": "Dota 2",
-        "process_names": ["dota2.exe"],
-        "ptt_key": "v",
-        "enabled": True
-    },
-    "discord": {
-        "name": "Discord",
-        "process_names": ["Discord.exe"],
-        "ptt_key": "grave",  # ` key
-        "enabled": True
-    },
-    "csgo": {
-        "name": "Counter-Strike",
-        "process_names": ["csgo.exe", "cs2.exe"],
-        "ptt_key": "k",
-        "enabled": True
-    },
-    "valorant": {
-        "name": "Valorant",
-        "process_names": ["VALORANT.exe", "VALORANT-Win64-Shipping.exe"],
-        "ptt_key": "v",
-        "enabled": True
-    }
-}
-
-
-class GameDetector:
-    """Detects running games and provides PTT profiles."""
+    Create slash command that references new-project workflow:
     
-    def __init__(self, config: Dict):
-        """Initialize game detector.
-        
-        Args:
-            config: Configuration dictionary with auto_ptt settings
-        """
-        self.config = config
-        self.game_profiles = self._load_game_profiles()
-        
-        # Cache for performance
-        self._last_detection_time = 0
-        self._last_detected_game = None
-        self._cache_duration = 5.0  # seconds
+    ```markdown
+    ---
+    allowed-tools: Read, Write, Bash(git add:*), Bash(git commit:*)
+    description: Initialize new GSD project with deep questioning
+    ---
     
-    def _load_game_profiles(self) -> Dict:
-        """Load game profiles from config or use defaults."""
-        auto_ptt_config = self.config.get('auto_ptt', {})
-        games_config = auto_ptt_config.get('games', {})
-        
-        # Start with defaults
-        profiles = DEFAULT_GAME_PROFILES.copy()
-        
-        # Override with user config
-        for game_id, game_config in games_config.items():
-            if game_id in profiles:
-                # Update existing profile
-                profiles[game_id].update(game_config)
-            else:
-                # Add custom game
-                profiles[game_id] = game_config
-        
-        return profiles
+    # /new-project
     
-    def detect_active_game(self) -> Optional[str]:
-        """Detect currently running game.
-        
-        Returns:
-            Game ID if detected, None otherwise
-        """
-        # Check cache
-        current_time = time.time()
-        if current_time - self._last_detection_time < self._cache_duration:
-            return self._last_detected_game
-        
-        # Get all running processes
-        try:
-            running_processes = {p.name().lower() for p in psutil.process_iter(['name'])}
-        except (psutil.NoSuchProcess, psutil.AccessDenied):
-            return None
-        
-        # Check each game profile
-        for game_id, profile in self.game_profiles.items():
-            if not profile.get('enabled', True):
-                continue
-            
-            # Check if any of the game's processes are running
-            process_names = profile.get('process_names', [])
-            for process_name in process_names:
-                if process_name.lower() in running_processes:
-                    # Found game
-                    self._last_detected_game = game_id
-                    self._last_detection_time = current_time
-                    return game_id
-        
-        # No game detected
-        self._last_detected_game = None
-        self._last_detection_time = current_time
-        return None
+    Read and follow the workflow at `.gsd/workflows/new-project.md`.
     
-    def get_game_profile(self, game_id: str) -> Optional[Dict]:
-        """Get profile for specific game.
-        
-        Args:
-            game_id: Game identifier
-            
-        Returns:
-            Game profile dict or None
-        """
-        return self.game_profiles.get(game_id)
+    **Context**:
+    - @.gsd/workflows/new-project.md
+    - @.gsd/templates/SPEC.md
+    - @.gsd/templates/ROADMAP.md
     
-    def get_game_ptt_key(self, game_id: str) -> Optional[str]:
-        """Get PTT key for specific game.
-        
-        Args:
-            game_id: Game identifier
-            
-        Returns:
-            PTT key string or None
-        """
-        profile = self.get_game_profile(game_id)
-        if profile:
-            return profile.get('ptt_key')
-        return None
+    Follow the `<process>` section step by step to create SPEC.md and ROADMAP.md.
+    ```
     
-    def is_game_running(self, game_id: str) -> bool:
-        """Check if specific game is running.
-        
-        Args:
-            game_id: Game identifier
-            
-        Returns:
-            True if game is running
-        """
-        detected = self.detect_active_game()
-        return detected == game_id
-    
-    def get_all_games(self) -> Dict:
-        """Get all game profiles.
-        
-        Returns:
-            Dictionary of all game profiles
-        """
-        return self.game_profiles.copy()
-
-
-def main():
-    """Test game detector."""
-    from config_loader import DEFAULT_CONFIG
-    
-    config = DEFAULT_CONFIG.copy()
-    config['auto_ptt'] = {
-        'enabled': True,
-        'hold_duration': 0.1,
-        'games': {}
-    }
-    
-    detector = GameDetector(config)
-    
-    print("[TEST] Game Detector")
-    print()
-    print("Available games:")
-    for game_id, profile in detector.get_all_games().items():
-        print(f"  - {profile['name']} ({game_id})")
-        print(f"    Processes: {', '.join(profile['process_names'])}")
-        print(f"    PTT Key: {profile['ptt_key']}")
-    
-    print()
-    print("Detecting active game...")
-    game = detector.detect_active_game()
-    if game:
-        profile = detector.get_game_profile(game)
-        print(f"[DETECTED] {profile['name']}")
-        print(f"[PTT KEY] {profile['ptt_key']}")
-    else:
-        print("[INFO] No supported game detected")
-
-
-if __name__ == "__main__":
-    main()
-```
-
-IMPORTANT:
-- Use psutil.process_iter() for process detection
-- Cache detection for 5 seconds (performance)
-- Support multiple process names per game
-- Load profiles from config with defaults
-- Handle psutil exceptions gracefully
+    WHY no arguments: Interactive command that asks questions
+    WHY these tools: Needs to read templates, write files, commit to git
   </action>
-  <verify>python -m py_compile src/game_detector.py</verify>
-  <done>game_detector.py created with GameDetector class</done>
+  <verify>type .claude\commands\new-project.md</verify>
+  <done>Command file exists with correct frontmatter</done>
 </task>
 
 <task type="auto">
-  <name>Add auto_ptt config to DEFAULT_CONFIG</name>
-  <files>src/config_loader.py</files>
+  <name>Create /map command</name>
+  <files>.claude/commands/map.md</files>
   <action>
-Update DEFAULT_CONFIG in src/config_loader.py to include auto_ptt settings:
-
-Add after the "overlay" section:
-```python
-    "overlay": {
-        "enabled": True,
-        "position": {"x": 100, "y": 100},
-        "size": {"width": 150, "height": 50},
-        "opacity": 0.9
-    },
-    "auto_ptt": {
-        "enabled": True,
-        "hold_duration": 0.1,
-        "games": {
-            "dota2": {"enabled": True, "ptt_key": "v"},
-            "discord": {"enabled": True, "ptt_key": "grave"},
-            "csgo": {"enabled": True, "ptt_key": "k"},
-            "valorant": {"enabled": True, "ptt_key": "v"}
-        }
-    }
-```
-
-Also update validate_config() to validate auto_ptt section:
-```python
-    # Validate auto_ptt section
-    auto_ptt = config.get("auto_ptt", {})
-    if not isinstance(auto_ptt.get("enabled"), bool):
-        return False, "auto_ptt.enabled must be boolean"
-    if not isinstance(auto_ptt.get("hold_duration"), (int, float)):
-        return False, "auto_ptt.hold_duration must be number"
-    if "games" not in auto_ptt:
-        return False, "auto_ptt.games is required"
-```
-
-IMPORTANT:
-- Maintain existing structure
-- Add validation for all auto_ptt fields
-- Include default game profiles
+    Create slash command that references map workflow and uses map-explorer subagent:
+    
+    ```markdown
+    ---
+    allowed-tools: Read, Write, Bash(git add:*), Bash(git commit:*)
+    description: Analyze codebase and create ARCHITECTURE.md
+    ---
+    
+    # /map
+    
+    Read and follow the workflow at `.gsd/workflows/map.md`.
+    
+    **Context**:
+    - @.gsd/workflows/map.md
+    - @.gsd/templates/ARCHITECTURE.md
+    
+    **Current Project**:
+    !`git branch --show-current`
+    !`ls -la`
+    
+    **With Kiro**: Use map-explorer subagent for codebase analysis (99% context savings).
+    
+    Follow the `<process>` section to analyze codebase and create ARCHITECTURE.md.
+    ```
+    
+    WHY bash pre-execution: Shows current branch and project structure
+    WHY reference subagent: Reminds to use map-explorer for efficiency
   </action>
-  <verify>python -c "import sys; sys.path.insert(0, 'src'); from config_loader import DEFAULT_CONFIG; assert 'auto_ptt' in DEFAULT_CONFIG; print('[OK] auto_ptt config added')"</verify>
-  <done>Auto-PTT configuration added to DEFAULT_CONFIG with validation</done>
+  <verify>type .claude\commands\map.md</verify>
+  <done>Command file exists with bash pre-execution</done>
+</task>
+
+<task type="auto">
+  <name>Create /plan command</name>
+  <files>.claude/commands/plan.md</files>
+  <action>
+    Create slash command with phase number argument:
+    
+    ```markdown
+    ---
+    allowed-tools: Read, Write, Bash(git add:*), Bash(git commit:*)
+    argument-hint: "[phase-number]"
+    description: Create execution plans for a phase
+    ---
+    
+    # /plan
+    
+    Read and follow the workflow at `.gsd/workflows/plan.md`.
+    
+    **Phase**: $1
+    
+    **Context**:
+    - @.gsd/workflows/plan.md
+    - @.gsd/ROADMAP.md
+    - @.gsd/STATE.md
+    - @.gsd/templates/phase-N-PLAN.md
+    
+    **Current State**:
+    !`git branch --show-current`
+    !`git status --short`
+    
+    Follow the `<process>` section to create execution plans for phase $1.
+    ```
+    
+    WHY $1: First positional argument is phase number
+    WHY argument-hint: Shows expected format in autocomplete
+  </action>
+  <verify>type .claude\commands\plan.md</verify>
+  <done>Command file exists with argument handling</done>
+</task>
+
+<task type="auto">
+  <name>Create /execute command</name>
+  <files>.claude/commands/execute.md</files>
+  <action>
+    Create slash command for execution:
+    
+    ```markdown
+    ---
+    allowed-tools: Read, Write, Edit, Bash, Grep, Glob
+    argument-hint: "[phase-number]"
+    description: Execute phase plans with atomic commits
+    ---
+    
+    # /execute
+    
+    Read and follow the workflow at `.gsd/workflows/execute.md`.
+    
+    **Phase**: $1
+    
+    **Context**:
+    - @.gsd/workflows/execute.md
+    - @.gsd/ROADMAP.md
+    - @.gsd/STATE.md
+    
+    **Current State**:
+    !`git branch --show-current`
+    !`git status --short`
+    !`ls .gsd/phases/$1/*.md`
+    
+    Follow the `<process>` section to execute all plans for phase $1 in wave order.
+    Create atomic commits for each task.
+    ```
+    
+    WHY all tools: Execution needs full capabilities
+    WHY list plans: Shows what will be executed
+  </action>
+  <verify>type .claude\commands\execute.md</verify>
+  <done>Command file exists with full tool access</done>
+</task>
+
+<task type="auto">
+  <name>Create /verify command</name>
+  <files>.claude/commands/verify.md</files>
+  <action>
+    Create slash command for verification:
+    
+    ```markdown
+    ---
+    allowed-tools: Read, Bash
+    argument-hint: "[phase-number]"
+    description: Validate phase implementation with empirical evidence
+    ---
+    
+    # /verify
+    
+    Read and follow the workflow at `.gsd/workflows/verify.md`.
+    
+    **Phase**: $1
+    
+    **Context**:
+    - @.gsd/workflows/verify.md
+    - @.gsd/ROADMAP.md
+    - @.gsd/STATE.md
+    
+    **Current State**:
+    !`git branch --show-current`
+    !`git diff --stat`
+    !`ls .gsd/phases/$1/*-SUMMARY.md`
+    
+    **With Kiro**: Use verify-agent subagent for autonomous verification.
+    
+    Follow the `<process>` section to verify all must-haves with empirical evidence.
+    ```
+    
+    WHY read + bash: Verification runs tests and checks
+    WHY reference subagent: Reminds to use verify-agent
+  </action>
+  <verify>type .claude\commands\verify.md</verify>
+  <done>Command file exists with verification tools</done>
+</task>
+
+<task type="auto">
+  <name>Create /progress command</name>
+  <files>.claude/commands/progress.md</files>
+  <action>
+    Create slash command for progress check:
+    
+    ```markdown
+    ---
+    allowed-tools: Read, Bash(git branch:*), Bash(git status:*)
+    description: Show current position and next steps
+    ---
+    
+    # /progress
+    
+    Read and follow the workflow at `.gsd/workflows/progress.md`.
+    
+    **Context**:
+    - @.gsd/workflows/progress.md
+    - @.gsd/ROADMAP.md
+    - @.gsd/STATE.md
+    
+    **Current State**:
+    !`git branch --show-current`
+    !`git status --short`
+    
+    Follow the `<process>` section to display current progress and next steps.
+    ```
+    
+    WHY limited tools: Read-only status command
+    WHY git commands: Shows current branch and changes
+  </action>
+  <verify>type .claude\commands\progress.md</verify>
+  <done>Command file exists with read-only tools</done>
 </task>
 
 ## Success Criteria
-- [ ] psutil added to requirements
-- [ ] GameDetector class detects running games
-- [ ] Game profiles loaded from config
-- [ ] Detection cached for performance
-- [ ] auto_ptt config in DEFAULT_CONFIG
-- [ ] Config validation includes auto_ptt section
+
+- [ ] `.claude/commands/` directory exists
+- [ ] All 6 core commands created with proper frontmatter
+- [ ] Commands reference existing workflows
+- [ ] Argument hints specified where needed
+- [ ] Bash pre-execution included where useful
+- [ ] File references use @ syntax
+- [ ] Changes committed to git
+
+## Notes
+
+These are the most frequently used GSD commands. They maintain compatibility by referencing existing workflows while providing Kiro-specific enhancements (argument hints, bash pre-execution, file references).

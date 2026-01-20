@@ -2,205 +2,312 @@
 phase: 4
 plan: 2
 wave: 2
-milestone: v1.2
 ---
 
-# Plan 4.2: Auto-PTT Integration
+# Plan 4.2: Management Commands (Phase & Milestone)
 
 ## Objective
-Integrate automatic PTT key pressing with VoiceTranslator, pressing the detected game's PTT key before playing translated audio and releasing it after.
+
+Create slash commands for phase management (6) and milestone management (4) commands using subdirectory organization.
 
 ## Context
-- src/game_detector.py - Game detection (from Plan 4.1)
-- src/voice_translator.py - Main translator class
-- .gsd/phases/4/RESEARCH.md - Auto-PTT workflow
+
+- .gsd/workflows/discuss-phase.md
+- .gsd/workflows/research-phase.md
+- .gsd/workflows/add-phase.md
+- .gsd/workflows/insert-phase.md
+- .gsd/workflows/remove-phase.md
+- .gsd/workflows/list-phase-assumptions.md
+- .gsd/workflows/new-milestone.md
+- .gsd/workflows/complete-milestone.md
+- .gsd/workflows/audit-milestone.md
+- .gsd/workflows/plan-milestone-gaps.md
+- .gsd/phases/4/RESEARCH.md (subdirectory organization)
 
 ## Tasks
 
 <task type="auto">
-  <name>Add auto-PTT logic to VoiceTranslator</name>
-  <files>src/voice_translator.py</files>
+  <name>Create phase management subdirectory</name>
+  <files>.claude/commands/phase/</files>
   <action>
-Update VoiceTranslator to integrate auto-PTT:
-
-1. **Add imports at top:**
-```python
-from game_detector import GameDetector
-import keyboard
-```
-
-2. **Add game_detector to __init__:**
-```python
-    def __init__(self,
-                 input_device=None,
-                 output_device=None,
-                 source_lang=None,
-                 target_lang=None,
-                 sample_rate=None,
-                 overlay=None,
-                 config=None):
-        # ... existing code ...
-        self.overlay = overlay
-        self.config = config or {}
-        
-        # Initialize game detector if auto-PTT enabled
-        self.game_detector = None
-        if self.config.get('auto_ptt', {}).get('enabled', False):
-            self.game_detector = GameDetector(self.config)
-            print("[INFO] Auto-PTT enabled")
-```
-
-3. **Add auto-PTT methods:**
-```python
-    def _press_game_ptt(self) -> bool:
-        """Press game's PTT key if game detected.
-        
-        Returns:
-            True if key was pressed, False otherwise
-        """
-        if not self.game_detector:
-            return False
-        
-        try:
-            # Detect active game
-            game_id = self.game_detector.detect_active_game()
-            if not game_id:
-                return False
-            
-            # Get game's PTT key
-            ptt_key = self.game_detector.get_game_ptt_key(game_id)
-            if not ptt_key:
-                return False
-            
-            # Get game profile for name
-            profile = self.game_detector.get_game_profile(game_id)
-            game_name = profile.get('name', game_id)
-            
-            # Press key
-            keyboard.press(ptt_key)
-            
-            # Small delay for game to register
-            hold_duration = self.config.get('auto_ptt', {}).get('hold_duration', 0.1)
-            time.sleep(hold_duration)
-            
-            print(f"[AUTO-PTT] Pressed {ptt_key} for {game_name}")
-            return True
-        
-        except Exception as e:
-            print(f"[WARNING] Auto-PTT press failed: {e}")
-            return False
+    Create `.claude/commands/phase/` subdirectory for phase management commands.
     
-    def _release_game_ptt(self) -> bool:
-        """Release game's PTT key if it was pressed.
-        
-        Returns:
-            True if key was released, False otherwise
-        """
-        if not self.game_detector:
-            return False
-        
-        try:
-            # Detect active game
-            game_id = self.game_detector.detect_active_game()
-            if not game_id:
-                return False
-            
-            # Get game's PTT key
-            ptt_key = self.game_detector.get_game_ptt_key(game_id)
-            if not ptt_key:
-                return False
-            
-            # Small delay before release
-            hold_duration = self.config.get('auto_ptt', {}).get('hold_duration', 0.1)
-            time.sleep(hold_duration)
-            
-            # Release key
-            keyboard.release(ptt_key)
-            
-            print(f"[AUTO-PTT] Released {ptt_key}")
-            return True
-        
-        except Exception as e:
-            print(f"[WARNING] Auto-PTT release failed: {e}")
-            return False
-```
-
-4. **Integrate in _processing_loop() around audio playback:**
-
-Find the audio playback section and wrap it:
-```python
-                    if audio is not None:
-                        # Update overlay to sending
-                        self._update_overlay('sending')
-                        
-                        if config.LOG_TRANSLATIONS:
-                            print()
-                            print(f"[PLAYING] Portuguese audio: \"{translated_text}\"")
-                        
-                        # Press game PTT if auto-PTT enabled
-                        ptt_pressed = self._press_game_ptt()
-                        
-                        # Play audio through VB-Cable
-                        self.playback.play(audio)
-                        
-                        # Release game PTT if it was pressed
-                        if ptt_pressed:
-                            self._release_game_ptt()
-                        
-                        # Calculate total latency
-                        if config.LOG_LATENCY:
-                            total_latency = time.time() - start_time
-                            print(f"[TIMING] Total latency: {total_latency:.2f}s")
-                            print("[COMPLETE] Done")
-                        
-                        # Back to idle
-                        self._update_overlay('idle')
-```
-
-IMPORTANT:
-- Check if game_detector exists before using
-- Handle all exceptions gracefully
-- Don't fail audio playback if PTT fails
-- Log auto-PTT actions for debugging
-- Use config hold_duration for timing
+    WHY subdirectory: Groups related commands, shows as "(project:phase)" in /help
   </action>
-  <verify>python -m py_compile src/voice_translator.py</verify>
-  <done>Auto-PTT integrated into VoiceTranslator with game detection</done>
+  <verify>dir .claude\commands\phase</verify>
+  <done>Subdirectory exists</done>
 </task>
 
 <task type="auto">
-  <name>Update main.py to pass config to VoiceTranslator</name>
-  <files>src/main.py</files>
+  <name>Create phase management commands</name>
+  <files>
+    .claude/commands/phase/discuss.md
+    .claude/commands/phase/research.md
+    .claude/commands/phase/add.md
+    .claude/commands/phase/insert.md
+    .claude/commands/phase/remove.md
+    .claude/commands/phase/list-assumptions.md
+  </files>
   <action>
-Update main.py to pass full config to VoiceTranslator:
-
-Find the VoiceTranslator initialization and update:
-```python
-        # Initialize translator with config and overlay
-        translator = VoiceTranslator(
-            input_device=input_device,
-            output_device=output_device,
-            source_lang=config['translation']['source_lang'],
-            target_lang=config['translation']['target_lang'],
-            sample_rate=config['audio']['sample_rate'],
-            overlay=overlay,
-            config=config  # Add full config for auto-PTT
-        )
-```
-
-IMPORTANT:
-- Pass entire config dict
-- Maintain existing parameters
-- No other changes needed
+    Create 6 phase management commands:
+    
+    **discuss.md**:
+    ```markdown
+    ---
+    allowed-tools: Read, Write, Bash(git add:*), Bash(git commit:*)
+    argument-hint: "[phase-number]"
+    description: Clarify phase scope before planning
+    ---
+    
+    # /discuss-phase
+    
+    Read and follow the workflow at `.gsd/workflows/discuss-phase.md`.
+    
+    **Phase**: $1
+    
+    **Context**:
+    - @.gsd/workflows/discuss-phase.md
+    - @.gsd/ROADMAP.md
+    
+    Follow the `<process>` section to capture implementation preferences.
+    ```
+    
+    **research.md**:
+    ```markdown
+    ---
+    allowed-tools: Read, Write, Bash(git add:*), Bash(git commit:*)
+    argument-hint: "[phase-number]"
+    description: Conduct technical research for phase planning
+    ---
+    
+    # /research-phase
+    
+    Read and follow the workflow at `.gsd/workflows/research-phase.md`.
+    
+    **Phase**: $1
+    
+    **Context**:
+    - @.gsd/workflows/research-phase.md
+    - @.gsd/ROADMAP.md
+    - @.gsd/ARCHITECTURE.md
+    
+    **With Kiro**: Use research-agent subagent for context-efficient research.
+    
+    Follow the `<process>` section to conduct research and create RESEARCH.md.
+    ```
+    
+    **add.md**:
+    ```markdown
+    ---
+    allowed-tools: Read, Write, Bash(git add:*), Bash(git commit:*)
+    description: Add new phase to ROADMAP.md
+    ---
+    
+    # /add-phase
+    
+    Read and follow the workflow at `.gsd/workflows/add-phase.md`.
+    
+    **Context**:
+    - @.gsd/workflows/add-phase.md
+    - @.gsd/ROADMAP.md
+    
+    Follow the `<process>` section to add a new phase.
+    ```
+    
+    **insert.md**:
+    ```markdown
+    ---
+    allowed-tools: Read, Write, Bash(git add:*), Bash(git commit:*)
+    argument-hint: "[position]"
+    description: Insert phase at specific position
+    ---
+    
+    # /insert-phase
+    
+    Read and follow the workflow at `.gsd/workflows/insert-phase.md`.
+    
+    **Position**: $1
+    
+    **Context**:
+    - @.gsd/workflows/insert-phase.md
+    - @.gsd/ROADMAP.md
+    
+    Follow the `<process>` section to insert phase at position $1.
+    ```
+    
+    **remove.md**:
+    ```markdown
+    ---
+    allowed-tools: Read, Write, Bash(git add:*), Bash(git commit:*)
+    argument-hint: "[phase-number]"
+    description: Remove phase from ROADMAP.md
+    ---
+    
+    # /remove-phase
+    
+    Read and follow the workflow at `.gsd/workflows/remove-phase.md`.
+    
+    **Phase**: $1
+    
+    **Context**:
+    - @.gsd/workflows/remove-phase.md
+    - @.gsd/ROADMAP.md
+    
+    Follow the `<process>` section to remove phase $1.
+    ```
+    
+    **list-assumptions.md**:
+    ```markdown
+    ---
+    allowed-tools: Read, Grep
+    description: List all phase assumptions from plans
+    ---
+    
+    # /list-phase-assumptions
+    
+    Read and follow the workflow at `.gsd/workflows/list-phase-assumptions.md`.
+    
+    **Context**:
+    - @.gsd/workflows/list-phase-assumptions.md
+    - @.gsd/ROADMAP.md
+    
+    Follow the `<process>` section to extract and list assumptions.
+    ```
+    
+    WHY separate files: Each command has different arguments and tools
+    WHY in phase/: Groups related commands together
   </action>
-  <verify>python -m py_compile src/main.py</verify>
-  <done>Config passed to VoiceTranslator for auto-PTT access</done>
+  <verify>dir .claude\commands\phase\*.md</verify>
+  <done>All 6 phase commands exist</done>
+</task>
+
+<task type="auto">
+  <name>Create milestone management subdirectory</name>
+  <files>.claude/commands/milestone/</files>
+  <action>
+    Create `.claude/commands/milestone/` subdirectory for milestone management commands.
+    
+    WHY subdirectory: Groups milestone commands, shows as "(project:milestone)" in /help
+  </action>
+  <verify>dir .claude\commands\milestone</verify>
+  <done>Subdirectory exists</done>
+</task>
+
+<task type="auto">
+  <name>Create milestone management commands</name>
+  <files>
+    .claude/commands/milestone/new.md
+    .claude/commands/milestone/complete.md
+    .claude/commands/milestone/audit.md
+    .claude/commands/milestone/plan-gaps.md
+  </files>
+  <action>
+    Create 4 milestone management commands:
+    
+    **new.md**:
+    ```markdown
+    ---
+    allowed-tools: Read, Write, Bash(git add:*), Bash(git commit:*)
+    argument-hint: "[name]"
+    description: Create new milestone with phases
+    ---
+    
+    # /new-milestone
+    
+    Read and follow the workflow at `.gsd/workflows/new-milestone.md`.
+    
+    **Milestone Name**: $ARGUMENTS
+    
+    **Context**:
+    - @.gsd/workflows/new-milestone.md
+    - @.gsd/templates/milestone.md
+    - @.gsd/ROADMAP.md
+    
+    Follow the `<process>` section to create milestone: $ARGUMENTS
+    ```
+    
+    **complete.md**:
+    ```markdown
+    ---
+    allowed-tools: Read, Write, Bash(git add:*), Bash(git commit:*)
+    description: Archive completed milestone
+    ---
+    
+    # /complete-milestone
+    
+    Read and follow the workflow at `.gsd/workflows/complete-milestone.md`.
+    
+    **Context**:
+    - @.gsd/workflows/complete-milestone.md
+    - @.gsd/ROADMAP.md
+    - @.gsd/STATE.md
+    
+    **Current Milestone**:
+    !`grep "Current Milestone" .gsd/STATE.md`
+    
+    Follow the `<process>` section to complete and archive milestone.
+    ```
+    
+    **audit.md**:
+    ```markdown
+    ---
+    allowed-tools: Read, Bash(git log:*)
+    description: Review milestone quality and completeness
+    ---
+    
+    # /audit-milestone
+    
+    Read and follow the workflow at `.gsd/workflows/audit-milestone.md`.
+    
+    **Context**:
+    - @.gsd/workflows/audit-milestone.md
+    - @.gsd/ROADMAP.md
+    
+    **Recent Commits**:
+    !`git log --oneline -20`
+    
+    Follow the `<process>` section to audit milestone.
+    ```
+    
+    **plan-gaps.md**:
+    ```markdown
+    ---
+    allowed-tools: Read, Write, Bash(git add:*), Bash(git commit:*)
+    description: Create plans to close milestone gaps
+    ---
+    
+    # /plan-milestone-gaps
+    
+    Read and follow the workflow at `.gsd/workflows/plan-milestone-gaps.md`.
+    
+    **Context**:
+    - @.gsd/workflows/plan-milestone-gaps.md
+    - @.gsd/ROADMAP.md
+    
+    Follow the `<process>` section to identify and plan gap closure.
+    ```
+    
+    WHY $ARGUMENTS for new: Milestone name can be multiple words
+    WHY bash pre-execution: Shows current state for context
+  </action>
+  <verify>dir .claude\commands\milestone\*.md</verify>
+  <done>All 4 milestone commands exist</done>
 </task>
 
 ## Success Criteria
-- [ ] VoiceTranslator initializes GameDetector if auto-PTT enabled
-- [ ] Game PTT key pressed before audio playback
-- [ ] Game PTT key released after audio playback
-- [ ] Audio plays even if PTT press/release fails
-- [ ] Auto-PTT actions logged for debugging
-- [ ] Config passed from main.py to translator
+
+- [ ] `phase/` subdirectory exists with 6 commands
+- [ ] `milestone/` subdirectory exists with 4 commands
+- [ ] All commands have proper frontmatter
+- [ ] Commands reference existing workflows
+- [ ] Argument hints specified where needed
+- [ ] Subdirectory organization working
+- [ ] Changes committed to git
+
+## Notes
+
+Subdirectory organization provides clear namespacing in `/help`:
+- Phase commands show as "(project:phase)"
+- Milestone commands show as "(project:milestone)"
+
+This makes it easy to discover related commands.
