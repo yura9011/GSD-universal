@@ -1,152 +1,189 @@
 ---
 phase: 2
 plan: 2
-wave: 1
+wave: 2
 ---
 
-# Plan 2.2: Whisper Speech Recognition Module
+# Plan 2.2: SPEC Writer Skill
 
 ## Objective
-Implementar reconocimiento de voz en español usando Whisper Tiny, optimizado para CPU, que transcribe audio a texto con baja latencia.
+
+Create executable skill for SPEC.md creation with programmatic validation, replacing the static template.
 
 ## Context
-- SPEC.md — Requirement: "Speech-to-text en español (Whisper tiny/base)" (must-have)
-- .gsd/phases/2/RESEARCH.md — Decisión de usar Whisper Tiny para velocidad
-- requirements.txt — openai-whisper ya incluido
+
+- ROADMAP.md (Phase 2: Skill para SPEC.md)
+- .gsd/phases/2/RESEARCH.md (Skill structure and validation)
+- .gsd/templates/SPEC.md (current template)
+- .kiro/skills/utils/ (validation framework from Plan 2.1)
 
 ## Tasks
 
 <task type="auto">
-  <name>Implementar módulo de transcripción con Whisper</name>
-  <files>src/audio/transcription.py</files>
+  <name>Create SPEC writer skill</name>
+  <files>
+    .kiro/skills/spec-writer/SKILL.md
+    .kiro/skills/spec-writer/reference.md
+  </files>
   <action>
-    Crear src/audio/transcription.py con clase WhisperTranscriber:
+    Create spec-writer skill with progressive disclosure:
     
-    ```python
-    class WhisperTranscriber:
-        def __init__(self, model_size='tiny', language='es', device='cpu'):
-            """
-            Initialize Whisper transcriber.
-            
-            Args:
-                model_size: 'tiny', 'base', 'small' (default: 'tiny')
-                language: Language code (default: 'es' for Spanish)
-                device: 'cpu' or 'cuda' (default: 'cpu')
-            """
-            # Load Whisper model using whisper.load_model()
-            # Store language and device
-            
-        def transcribe(self, audio_data, sample_rate=16000):
-            """
-            Transcribe audio to text.
-            
-            Args:
-                audio_data: numpy array with audio samples
-                sample_rate: Sample rate of audio
-                
-            Returns:
-                str: Transcribed text in Spanish, or empty string if no speech
-            """
-            # Ensure audio is float32 and normalized
-            # Run Whisper transcription
-            # Extract text from result
-            # Return transcribed text
-            
-        def get_model_info(self):
-            """Get information about loaded model."""
-            # Return model size, language, device
+    **SKILL.md**:
+    ```yaml
+    ---
+    name: spec-writer
+    description: Creates and validates SPEC.md files for project specifications. Use when starting a new project, writing specifications, or when user mentions "spec", "specification", or "requirements".
+    allowed-tools: Read, Write
+    ---
+    
+    # SPEC Writer
+    
+    ## Overview
+    Guides creation of SPEC.md with proper structure and validation.
+    
+    ## Required Sections
+    1. Vision (one paragraph)
+    2. Goals (numbered list)
+    3. Non-Goals (what's out of scope)
+    4. Constraints (technical/business limits)
+    5. Success Criteria (measurable outcomes)
+    
+    ## Process
+    1. Ask user about project vision
+    2. Identify 3-5 main goals
+    3. Define what's explicitly out of scope
+    4. List constraints
+    5. Define measurable success criteria
+    6. Create SPEC.md with status: DRAFT
+    7. Run validation script
+    8. If validation fails: fix issues
+    9. Ask user to review and finalize
+    
+    ## Validation
+    Run: `python .kiro/skills/spec-writer/scripts/validate_spec.py SPEC.md`
+    
+    For detailed template, see [reference.md](reference.md)
     ```
     
-    IMPORTANTE:
-    - Usar whisper.load_model(model_size) para cargar modelo
-    - Especificar language='es' en transcribe() para forzar español
-    - Normalizar audio a float32 en rango [-1, 1]
-    - Manejar casos donde Whisper no detecta nada (retornar "")
-    - Incluir logging de tiempo de transcripción
-    - Agregar docstrings claros
+    **reference.md**: Copy content from `.gsd/templates/SPEC.md`
+    
+    WHY progressive disclosure: Keep SKILL.md focused, details in reference
+    AVOID: Duplicating all template content in SKILL.md
   </action>
-  <verify>python -c "from src.audio.transcription import WhisperTranscriber; print('OK')"</verify>
-  <done>src/audio/transcription.py implementado con clase WhisperTranscriber funcional</done>
+  <verify>type .kiro\skills\spec-writer\SKILL.md</verify>
+  <done>Skill files exist with complete structure</done>
 </task>
 
 <task type="auto">
-  <name>Crear script de test de Whisper</name>
-  <files>src/test_whisper.py</files>
+  <name>Create SPEC validation script</name>
+  <files>.kiro/skills/spec-writer/scripts/validate_spec.py</files>
   <action>
-    Crear src/test_whisper.py que:
-    
-    1. Importa WhisperTranscriber y AudioCapture
-    2. Captura audio del micrófono por 3-5 segundos
-    3. Transcribe el audio capturado
-    4. Muestra en consola:
-       ```
-       === Test de Whisper Speech Recognition ===
-       
-       Modelo: Whisper Tiny (español)
-       Device: CPU
-       
-       🎤 Habla durante 3 segundos...
-       [Recording...] ████████████████████ 100%
-       
-       🔄 Transcribiendo...
-       ⏱️  Tiempo: 0.85s
-       
-       📝 Transcripción:
-       "Hola, esto es una prueba del reconocimiento de voz"
-       
-       ✅ Test completado!
-       ```
-    5. Mide y muestra tiempo de transcripción
-    6. Permite múltiples intentos (loop)
-    7. Maneja Ctrl+C para salir
-    
-    IMPORTANTE:
-    - Este test valida que Whisper funciona en CPU
-    - Debe mostrar latencia real para verificar < 3s total
-    - Ayuda al usuario a probar diferentes frases
-  </action>
-  <verify>python src/test_whisper.py (grabar una frase y verificar transcripción)</verify>
-  <done>src/test_whisper.py ejecuta, graba audio, y transcribe correctamente en español</done>
-</task>
-
-<task type="auto">
-  <name>Actualizar __init__.py del módulo audio</name>
-  <files>src/audio/__init__.py</files>
-  <action>
-    Actualizar src/audio/__init__.py para exportar nuevas clases:
+    Create validation script for SPEC.md:
     
     ```python
-    """
-    Audio module for voice translator.
-    Handles audio capture, playback, device management, VAD, and transcription.
-    """
+    #!/usr/bin/env python3
+    import sys
+    import os
     
-    from .utils import list_audio_devices, find_device_by_name, get_default_devices
-    from .capture import AudioCapture
-    from .playback import AudioPlayback
-    from .vad import VoiceActivityDetector
-    from .transcription import WhisperTranscriber
+    # Add skills utils to path
+    sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'utils'))
     
-    __all__ = [
-        'list_audio_devices',
-        'find_device_by_name', 
-        'get_default_devices',
-        'AudioCapture',
-        'AudioPlayback',
-        'VoiceActivityDetector',
-        'WhisperTranscriber'
-    ]
+    from validator_base import SkillValidator
+    
+    class SpecValidator(SkillValidator):
+        REQUIRED_SECTIONS = [
+            "Vision",
+            "Goals",
+            "Non-Goals",
+            "Constraints",
+            "Success Criteria"
+        ]
+        
+        def validate(self, file_path):
+            # Check file exists
+            if not self.check_file_exists(file_path):
+                self.report_error(f"File not found: {file_path}")
+                return False
+            
+            # Read content
+            with open(file_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+            
+            # Check YAML frontmatter
+            yaml = self.check_yaml_frontmatter(content)
+            if not yaml:
+                self.report_error("Missing or invalid YAML frontmatter")
+                return False
+            
+            # Check status field
+            if 'status' not in yaml:
+                self.report_error("Missing 'status' field in frontmatter")
+                return False
+            
+            # Check required sections
+            for section in self.REQUIRED_SECTIONS:
+                if not self.check_section_exists(content, section):
+                    self.report_error(f"Missing required section: ## {section}")
+                    return False
+            
+            # Check sections are not empty
+            for section in self.REQUIRED_SECTIONS:
+                # Simple check: section header followed by content
+                if f"## {section}\n\n##" in content or f"## {section}\n---" in content:
+                    self.report_error(f"Section '{section}' appears to be empty")
+                    return False
+            
+            return True
+    
+    if __name__ == "__main__":
+        if len(sys.argv) < 2:
+            print("Usage: validate_spec.py <spec-file>", file=sys.stderr)
+            sys.exit(1)
+        
+        validator = SpecValidator()
+        if validator.validate(sys.argv[1]):
+            print("✓ SPEC.md validation passed")
+            sys.exit(0)
+        else:
+            sys.exit(1)
     ```
     
-    Esto permite imports limpios de todas las clases de audio.
+    WHY inheritance: Reuses common validation logic
+    AVOID: Hardcoding file paths - accept as argument
   </action>
-  <verify>python -c "from src.audio import WhisperTranscriber, VoiceActivityDetector; print('OK')"</verify>
-  <done>src/audio/__init__.py actualizado con exports de VAD y Whisper</done>
+  <verify>python .kiro\skills\spec-writer\scripts\validate_spec.py --help</verify>
+  <done>Validation script exists and runs</done>
+</task>
+
+<task type="checkpoint:human-verify">
+  <name>Test SPEC writer skill</name>
+  <files>test_spec.md</files>
+  <action>
+    Manual test of spec-writer skill:
+    
+    1. Ask Claude to create a SPEC.md using the skill
+    2. Verify skill is auto-invoked (description triggers)
+    3. Verify all required sections are created
+    4. Run validation script manually
+    5. Verify validation passes
+    6. Test with intentionally incomplete SPEC
+    7. Verify validation catches missing sections
+    
+    This validates the skill works end-to-end.
+  </action>
+  <verify>User confirms skill creates valid SPEC.md</verify>
+  <done>SPEC writer skill successfully creates and validates specifications</done>
 </task>
 
 ## Success Criteria
-- [ ] WhisperTranscriber implementado y puede transcribir audio en español
-- [ ] test_whisper.py ejecuta y transcribe correctamente frases en español
-- [ ] Latencia de transcripción < 2 segundos en CPU (Whisper Tiny)
-- [ ] Manejo de errores para audio vacío o sin voz
-- [ ] __init__.py actualizado para exports limpios
+
+- [ ] spec-writer skill exists with SKILL.md and reference.md
+- [ ] Validation script exists and is functional
+- [ ] Script validates all required sections
+- [ ] Script checks for empty sections
+- [ ] Skill auto-invokes when user mentions "spec"
+- [ ] Changes committed to git
+
+## Notes
+
+This is the first "living template" - active documentation that validates itself.

@@ -4,118 +4,121 @@ plan: 1
 wave: 1
 ---
 
-# Plan 2.1: Voice Activity Detection (VAD) Module
+# Plan 2.1: Skills Infrastructure Setup
 
 ## Objective
-Implementar detección de actividad de voz usando Silero VAD para identificar cuándo el usuario está hablando vs silencio/ruido, optimizando el procesamiento y reduciendo transcripciones innecesarias.
+
+Create the foundational directory structure and base templates for Kiro Skills, establishing the framework for executable documentation.
 
 ## Context
-- SPEC.md — Requirement: "Detección de actividad de voz (VAD)" (should-have)
-- .gsd/phases/2/RESEARCH.md — Decisión de usar Silero VAD por precisión
-- src/audio/capture.py — Módulo de captura ya implementado
+
+- ROADMAP.md (Phase 2 objectives)
+- .gsd/phases/2/RESEARCH.md (Skills implementation strategy)
+- resarch/skills.md (Kiro skills documentation)
+- .gsd/templates/ (existing templates to migrate)
 
 ## Tasks
 
 <task type="auto">
-  <name>Actualizar requirements.txt con Silero VAD</name>
-  <files>requirements.txt</files>
+  <name>Create Skills directory structure</name>
+  <files>
+    .kiro/skills/README.md
+    .kiro/skills/.gitkeep
+  </files>
   <action>
-    Agregar silero-vad a requirements.txt:
+    Create the `.kiro/skills/` directory structure:
     
-    Después de la sección "# Speech Recognition (Phase 2)", agregar:
-    ```
-    silero-vad>=5.0.0
-    ```
+    1. Create `.kiro/skills/` directory
+    2. Create `.kiro/skills/README.md` with overview
+    3. Add .gitkeep to ensure directory is tracked
     
-    IMPORTANTE: torch ya está incluido como dependencia de openai-whisper, no agregarlo de nuevo.
+    **README.md content**:
+    - Overview of GSD Skills
+    - Directory structure explanation
+    - How skills are auto-invoked
+    - Link to Kiro skills documentation
+    
+    This establishes the foundation for all skill files.
+    
+    AVOID: Creating individual skill directories yet (next plans handle that)
   </action>
-  <verify>type requirements.txt | findstr silero-vad</verify>
-  <done>requirements.txt contiene silero-vad>=5.0.0</done>
+  <verify>dir .kiro\skills</verify>
+  <done>Directory exists: .kiro/skills/ with README.md</done>
 </task>
 
 <task type="auto">
-  <name>Implementar módulo VAD con Silero</name>
-  <files>src/audio/vad.py</files>
+  <name>Create skill validation framework</name>
+  <files>
+    .kiro/skills/utils/__init__.py
+    .kiro/skills/utils/validator_base.py
+  </files>
   <action>
-    Crear src/audio/vad.py con clase VoiceActivityDetector:
+    Create shared validation utilities for skill scripts:
     
-    ```python
-    class VoiceActivityDetector:
-        def __init__(self, sample_rate=16000, threshold=0.5):
-            """
-            Initialize VAD using Silero VAD model.
-            
-            Args:
-                sample_rate: Audio sample rate (must be 16000 for Silero)
-                threshold: Confidence threshold (0.0-1.0). Higher = more strict.
-            """
-            # Load Silero VAD model
-            # Store sample_rate and threshold
-            
-        def is_speech(self, audio_chunk):
-            """
-            Detect if audio chunk contains speech.
-            
-            Args:
-                audio_chunk: numpy array with audio samples
-                
-            Returns:
-                bool: True if speech detected, False otherwise
-            """
-            # Run VAD on audio chunk
-            # Return True if confidence > threshold
-            
-        def reset(self):
-            """Reset VAD internal state."""
-            # Reset model state for new audio stream
-    ```
+    **validator_base.py**: Base class for validators
+    - Class: `SkillValidator` with common methods
+    - Method: `check_file_exists(path)` returns boolean
+    - Method: `check_section_exists(content, section)` returns boolean
+    - Method: `check_yaml_frontmatter(content)` returns dict or None
+    - Method: `report_error(message)` prints to stderr
+    - Method: `validate()` abstract method (override in subclasses)
     
-    IMPORTANTE:
-    - Usar torch.hub.load para cargar modelo Silero VAD
-    - Silero requiere sample_rate = 16000 (ya lo usamos)
-    - Manejar conversión de numpy array a torch tensor
-    - Incluir docstrings claros
-    - Agregar logging básico (print statements)
+    These utilities will be inherited by all skill validators.
+    
+    WHY base class: Reduces code duplication across validators
+    AVOID: Complex logic - keep base class simple and focused
   </action>
-  <verify>python -c "from src.audio.vad import VoiceActivityDetector; print('OK')"</verify>
-  <done>src/audio/vad.py implementado con clase VoiceActivityDetector funcional</done>
+  <verify>python -c "from .kiro.skills.utils.validator_base import SkillValidator; print('OK')"</verify>
+  <done>Validator base class exists and is importable</done>
 </task>
 
 <task type="auto">
-  <name>Crear script de test de VAD</name>
-  <files>src/test_vad.py</files>
+  <name>Create skill template</name>
+  <files>.kiro/skills/SKILL_TEMPLATE.md</files>
   <action>
-    Crear src/test_vad.py que:
+    Create template for new skills:
     
-    1. Importa VoiceActivityDetector y AudioCapture
-    2. Captura audio del micrófono en tiempo real
-    3. Procesa cada chunk con VAD
-    4. Muestra en consola:
-       ```
-       === Test de Voice Activity Detection ===
-       
-       🎤 Capturando audio...
-       Presiona Ctrl+C para detener
-       
-       [SPEECH] ████████████ (confidence: 0.85)
-       [SILENCE] ░░░░░░░░░░░░ (confidence: 0.12)
-       [SPEECH] ████████████ (confidence: 0.92)
-       ```
-    5. Usa colores o símbolos para distinguir speech vs silence
-    6. Maneja Ctrl+C gracefully
+    ```markdown
+    ---
+    name: skill-name
+    description: What this skill does and when to use it. Include trigger keywords.
+    allowed-tools: Read, Write, Bash
+    ---
     
-    IMPORTANTE:
-    - Este script ayuda a ajustar el threshold de VAD
-    - Debe ser fácil de usar para el usuario
-    - Mostrar confidence score para debugging
+    # Skill Name
+    
+    ## Overview
+    Brief description of what this skill helps with.
+    
+    ## When to Use
+    - Scenario 1
+    - Scenario 2
+    
+    ## Instructions
+    Step-by-step guidance for Claude.
+    
+    ## Validation
+    This skill includes validation scripts in `scripts/` directory.
+    
+    ## Examples
+    Concrete examples of using this skill.
+    ```
+    
+    This template will be copied when creating new skills.
+    
+    WHY template: Ensures consistency across all skills
   </action>
-  <verify>python src/test_vad.py (ejecutar por 5 segundos y detener)</verify>
-  <done>src/test_vad.py ejecuta y muestra detección de voz en tiempo real</done>
+  <verify>type .kiro\skills\SKILL_TEMPLATE.md</verify>
+  <done>Template exists with complete structure</done>
 </task>
 
 ## Success Criteria
-- [ ] requirements.txt actualizado con silero-vad
-- [ ] VoiceActivityDetector implementado y puede detectar voz en audio chunks
-- [ ] test_vad.py ejecuta y muestra detección en tiempo real
-- [ ] VAD distingue correctamente entre voz y silencio
-- [ ] Usuario puede ajustar threshold si es necesario
+
+- [ ] `.kiro/skills/` directory exists with README.md
+- [ ] Validator base class exists and is functional
+- [ ] Skill template exists with complete structure
+- [ ] All files committed to git
+
+## Notes
+
+This plan creates the skeleton. Actual skill implementations come in Plans 2.2 and 2.3.
