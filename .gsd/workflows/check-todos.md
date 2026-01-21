@@ -52,9 +52,9 @@ Filter by priority if flag provided.
 
 PENDING ({N} items)
 ───────────────────
-🔴 {high priority item}
-🟡 {medium priority item}
-🟢 {low priority item}
+[CRITICAL] {high priority item}
+[MEDIUM] {medium priority item}
+[LOW] {low priority item}
 
 {If --all flag:}
 COMPLETED ({M} items)
@@ -73,8 +73,8 @@ COMPLETED ({M} items)
 <priority_indicators>
 | Priority | Indicator |
 |----------|-----------|
-| high | 🔴 |
-| medium | 🟡 |
-| low | 🟢 |
-| done | ✅ |
+| high | [CRITICAL] |
+| medium | [MEDIUM] |
+| low | [LOW] |
+| done | [DONE] |
 </priority_indicators>

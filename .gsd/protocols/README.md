@@ -77,10 +77,10 @@ $hasTool = Get-Command tool_name -ErrorAction SilentlyContinue
 Used when advanced tools unavailable:
 
 ```
-⚠ Advanced tool not available
-📋 Using fallback method
-✓ Basic validation complete
-💡 Install [tool] for enhanced functionality
+[WARN] Advanced tool not available
+[NOTE] Using fallback method
+[OK] Basic validation complete
+[TIP] Install [tool] for enhanced functionality
 ```
 
 ### Cross-Platform File Operations
@@ -113,11 +113,11 @@ All protocols integrate seamlessly with GSD workflows:
 ## Success Criteria
 
 These protocols succeed when:
-- ✅ Work identically in any environment
-- ✅ Provide clear feedback with or without advanced tools
-- ✅ Maintain cross-platform compatibility
-- ✅ Require zero IDE-specific features
-- ✅ Enable confident execution anywhere
+- [OK] Work identically in any environment
+- [OK] Provide clear feedback with or without advanced tools
+- [OK] Maintain cross-platform compatibility
+- [OK] Require zero IDE-specific features
+- [OK] Enable confident execution anywhere
 
 ## Getting Started
 

@@ -23,9 +23,9 @@ Read from:
 
 | Category | Priority | Action |
 |----------|----------|--------|
-| Must-have failures | 🔴 High | Create fix phase |
-| Technical debt | 🟡 Medium | Add to roadmap |
-| Nice-to-have misses | 🟢 Low | Add to backlog |
+| Must-have failures | [CRITICAL] High | Create fix phase |
+| Technical debt | [MEDIUM] Medium | Add to roadmap |
+| Nice-to-have misses | [LOW] Low | Add to backlog |
 
 ---
 

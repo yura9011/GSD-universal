@@ -62,11 +62,11 @@
 
 ## Priority Indicators
 
-| Priority | Icon |
-|----------|------|
-| High | 🔴 |
-| Medium | 🟡 |
-| Low | 🟢 |
+| Priority | Indicator |
+|----------|-----------|
+| High | [CRITICAL] |
+| Medium | [MEDIUM] |
+| Low | [LOW] |
 
 ---
 

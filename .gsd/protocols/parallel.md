@@ -125,10 +125,10 @@ invokeSubAgent({ name: "research-agent", prompt: "Research X" })
 **Example output**:
 ```
 === Task Execution Progress ===
-✓ Task 1: File structure analysis (completed)
-⏳ Task 2: Dependency mapping (in progress)  
-⏸ Task 3: Architecture docs (queued)
-❌ Task 4: Performance analysis (failed)
+[OK] Task 1: File structure analysis (completed)
+[IN-PROGRESS] Task 2: Dependency mapping (in progress)  
+[PAUSED] Task 3: Architecture docs (queued)
+[FAIL] Task 4: Performance analysis (failed)
 
 3/4 tasks processed, 1 remaining
 ```
