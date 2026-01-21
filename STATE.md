@@ -2,8 +2,10 @@
 
 ## Current Position
 
-- **Milestone**: kiro-integration
-- **Status**: ✅ Complete
+- **Milestone**: ralph-loop
+- **Phase**: 1 (Core Ralph Engine)
+- **Task**: Planning complete, ready for execution
+- **Status**: 3 execution plans created across 2 waves
 - **Last Updated**: 2026-01-20
 
 ## Context
@@ -37,7 +39,7 @@ Phases 1-4 successfully implemented:
 - ✅ Workflow compatibility maintained
 - ✅ Complete documentation (README.md, SYSTEM.md)
 
-## Milestone Complete
+## Previous Milestone Complete: kiro-integration
 
 All 4 phases successfully implemented:
 - Phase 1: Hooks Foundation
@@ -46,6 +48,19 @@ All 4 phases successfully implemented:
 - Phase 4: Command Modernization
 
 GSD framework now fully integrated with Kiro IDE capabilities while maintaining cross-platform portability.
+
+## Current Milestone: ralph-loop
+
+**Goal**: Implement autonomous execution loop (Ralph) for GSD framework
+
+**Phases Planned**: 5 phases covering core engine, operational system, Kiro integration, quality gates, and documentation
+
+**Phase 1 Status**: Planning complete
+- Plan 1.1: Core Loop Scripts (wave 1)
+- Plan 1.2: Essential Ralph Files (wave 1)  
+- Plan 1.3: Prompt Templates & Testing (wave 2)
+
+**Next Steps**: `/execute 1` to implement all Phase 1 plans
 
 ## Decisions Made
 
