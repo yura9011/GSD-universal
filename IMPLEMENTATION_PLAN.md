@@ -49,6 +49,12 @@
 
 ### Recently Completed
 
+- [x] **Update Scripts** (2026-01-21)
+  - Created: `update.bat` and `update.sh`
+  - Purpose: Update GSD framework in existing projects
+  - Features: Preserves user files, optional updates for AGENTS.md and docs
+  - Updated: README.md with update instructions
+
 - [x] **Agent Discipline Protocol** (2026-01-21)
   - Problem: Agents can "go rogue" and invent their own plans
   - Solution: Three-layer defense (AGENTS.md, PROMPT files, user discipline)

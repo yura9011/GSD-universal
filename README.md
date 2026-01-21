@@ -187,6 +187,55 @@ cp loop.sh loop.ps1 PROMPT_*.md /path/to/your/project/
 - Read `.gsd/workflows/new-project.md` to initialize
 - Or use Ralph Loop: `./loop.sh build`
 
+### Updating GSD
+
+If you already have GSD installed and want to update to the latest version:
+
+**Windows:**
+```cmd
+# In GSD-universal repository (pull latest changes first)
+cd GSD-universal
+git pull
+
+# Run update script
+update.bat
+
+# Follow prompts to update your project
+```
+
+**Linux/Mac:**
+```bash
+# In GSD-universal repository (pull latest changes first)
+cd GSD-universal
+git pull
+
+# Make update script executable
+chmod +x update.sh
+
+# Run update script
+./update.sh
+
+# Follow prompts to update your project
+```
+
+The update script will:
+- Update GSD framework files (.gsd/, scripts/)
+- Update Ralph Loop files (loop.ps1, loop.sh)
+- Update prompt templates (PROMPT_*.md)
+- Preserve your work (IMPLEMENTATION_PLAN.md, specs/, source code)
+- Ask before updating AGENTS.md and documentation
+
+**What gets updated:**
+- Framework files and workflows
+- Validation and utility scripts
+- Ralph Loop protocol files
+
+**What stays safe:**
+- Your tasks (IMPLEMENTATION_PLAN.md)
+- Your specs and requirements
+- Your source code
+- Your git history
+
 ### For New Projects
 
 Use this repository as a template:
