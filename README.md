@@ -18,13 +18,48 @@ No IDE dependencies. Pure markdown + git + shell scripts.
 
 Ralph Loop enables autonomous execution of GSD tasks through iterative AI assistance.
 
+### What is Ralph Loop?
+
+Ralph Loop is a methodology created by **Geoffrey Huntley** that enables AI assistants to work autonomously on long-running tasks by breaking them into iterations with fresh context.
+
+**Key Concept**: Each iteration gets a fresh 200k token context window, preventing context pollution and quality degradation.
+
 ### How Ralph Works
 
 Ralph is a **protocol**, not a tool. It coordinates work using:
-- Markdown files for state
-- Git for history
-- Shell scripts for validation
-- Any AI assistant for execution
+- **Markdown files** for state (IMPLEMENTATION_PLAN.md)
+- **Git** for history and commits
+- **Shell scripts** for validation (backpressure)
+- **Any AI assistant** for execution
+
+### The Ralph Loop Cycle
+
+```
+1. Read IMPLEMENTATION_PLAN.md (what needs to be done)
+2. Choose most important task
+3. Execute task with AI
+4. Validate changes (backpressure)
+5. Commit if validation passes
+6. Update IMPLEMENTATION_PLAN.md
+7. Loop restarts with FRESH CONTEXT
+```
+
+**Why it works**: Each iteration starts fresh. No accumulated context, no degradation, consistent quality.
+
+### Universal Ralph Loop
+
+Our implementation makes Ralph Loop truly universal:
+
+**Original Ralph Loop** (Geoffrey Huntley):
+- Requires AI CLI (claude, openai, etc.)
+- Automated execution
+- Works in terminal
+
+**GSD Universal Ralph Loop**:
+- Works with ANY AI (ChatGPT web, Claude web, Kiro, terminal)
+- Interactive mode (no CLI needed)
+- Automated mode (if CLI available)
+- Cross-platform (bash + PowerShell)
 
 ### Quick Start
 
@@ -41,6 +76,10 @@ Ralph is a **protocol**, not a tool. It coordinates work using:
 - `--dry-run` - Validate setup only
 
 See `.gsd/protocols/ralph-loop.md` for complete protocol specification.
+
+### Credits
+
+Ralph Loop methodology created by [Geoffrey Huntley](https://github.com/ghuntley). Our implementation makes it universal and IDE-agnostic.
 
 ---
 
@@ -310,25 +349,49 @@ MIT License - See LICENSE file for details
 
 ## Credits
 
-This project is based on [Get Shit Done](https://github.com/glittercowboy/get-shit-done) by [glittercowboy](https://github.com/glittercowboy).
+### Original Creators
 
-GSD is a context engineering framework created by glittercowboy that makes AI coding reliable and consistent. The original framework was designed for Claude Code and has been adapted here as a universal version that works with any AI assistant.
+**GSD Framework**: Created by [glittercowboy](https://github.com/glittercowboy)
+- Original project: [get-shit-done](https://github.com/glittercowboy/get-shit-done)
+- Context engineering framework for Claude Code
+- Spec-driven development methodology
+- Multi-agent orchestration patterns
 
-### What This Version Adds
+**Ralph Loop**: Created by [Geoffrey Huntley](https://github.com/ghuntley)
+- Autonomous AI execution methodology
+- Fresh context per iteration pattern
+- Backpressure-driven quality control
+- File-based state management
 
-This universal version extends the original GSD framework with:
+### GSD Universal
+
+This project combines both methodologies into a truly universal framework:
+
+**What we added**:
 - Universal protocols (no IDE dependencies)
 - Cross-platform scripts (bash + PowerShell)
-- File-based task coordination
-- Ralph Loop protocol for autonomous execution
-- Complete portability across all AI assistants
+- Interactive Ralph Loop (works without AI CLI)
+- Codebase intelligence system
+- Works with any AI (ChatGPT, Claude, Kiro, Gemini, etc.)
+- Complete portability across all environments
 
-All core GSD concepts, workflows, and methodology are from the original work by glittercowboy.
+**Core concepts and methodology**: Original work by glittercowboy and Geoffrey Huntley.
 
-## Related Projects
+**Universal implementation**: This repository.
+
+### Related Projects
 
 - [get-shit-done](https://github.com/glittercowboy/get-shit-done) - Original GSD for Claude Code
+- [ralph-playbook](https://github.com/ClaytonFarr/ralph-playbook) - Comprehensive Ralph Loop guide
 - [get-shit-done-for-antigravity](https://github.com/toonight/get-shit-done-for-antigravity) - GSD for Antigravity
+
+### Acknowledgments
+
+Special thanks to:
+- **glittercowboy** for creating the GSD framework and proving spec-driven AI development works
+- **Geoffrey Huntley** for the Ralph Loop methodology and fresh context pattern
+- **Clayton Farr** for the comprehensive Ralph Playbook documentation
+- The AI development community for feedback and contributions
 
 ## Support
 
