@@ -2,6 +2,41 @@
 
 A portable, spec-driven development methodology adapted for Kiro IDE.
 
+# GSD for Kiro IDE
+
+A portable, spec-driven development methodology adapted for Kiro IDE.
+
+## Ralph Loop - Autonomous Execution
+
+Ralph Loop enables autonomous execution of GSD tasks through iterative AI assistance.
+
+### Universal Ralph (Works Anywhere)
+
+Ralph is a **protocol**, not a tool. It works with any AI assistant:
+- ChatGPT web interface
+- Claude web interface  
+- Kiro IDE
+- VS Code + Copilot
+- Terminal + any AI
+
+### Quick Start
+
+1. Ensure setup complete: `./scripts/ralph.sh --dry-run`
+2. Start build mode: `./scripts/ralph.sh build`
+3. Execute prompts with your AI assistant
+4. Let Ralph coordinate validation and commits
+
+### Modes
+
+- `build` - Implement functionality from IMPLEMENTATION_PLAN.md
+- `plan` - Update and prioritize tasks
+- `--manual` - Full manual mode (no automation)
+- `--dry-run` - Validate setup only
+
+See `.gsd/protocols/ralph-loop.md` for complete protocol specification.
+
+---
+
 ## About
 
 Get Shit Done (GSD) is a context engineering framework created by [glittercowboy](https://github.com/glittercowboy) that makes AI coding reliable and consistent. This is an adaptation of the [original GSD framework](https://github.com/glittercowboy/get-shit-done) for Kiro IDE, with full support for Kiro-specific features including hooks, skills, subagents, and slash commands.

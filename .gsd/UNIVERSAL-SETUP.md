@@ -1,5 +1,67 @@
 # GSD Universal Setup Guide
 
+## Ralph Loop Setup
+
+### Using Ralph with Different AI Assistants
+
+**ChatGPT Web**:
+1. Run `./scripts/ralph.sh build`
+2. Copy the displayed prompt
+3. Paste into ChatGPT web interface
+4. Let ChatGPT execute the prompt
+5. Press ENTER in terminal when done
+6. Ralph runs validation and helps with commits
+
+**Claude Web**:
+- Same process as ChatGPT
+- Copy prompt from terminal
+- Paste into Claude web
+- Execute and return to terminal
+
+**Kiro IDE**:
+- Run Ralph in Kiro's integrated terminal
+- Copy prompt to Kiro chat
+- Or use Kiro's AI features directly
+- Return to terminal when done
+
+**VS Code + Copilot**:
+- Run Ralph in VS Code terminal
+- Use Copilot chat with the prompt
+- Or copy to external AI
+- Return to terminal when done
+
+**Terminal + Any AI**:
+- Run Ralph in any terminal
+- Copy prompt to your preferred AI
+- Execute anywhere (web, mobile, etc.)
+- Return to terminal when done
+
+### Manual Execution
+
+If you prefer full manual control:
+
+```bash
+# Just show prompts, no automation
+./scripts/ralph.sh --manual
+```
+
+This displays prompts but doesn't run validation or git operations automatically.
+
+### Troubleshooting
+
+**Issue**: Validation fails
+**Solution**: Fix the issues reported, then continue
+
+**Issue**: Git conflicts
+**Solution**: Resolve manually, then continue Ralph
+
+**Issue**: Missing files
+**Solution**: Run `./scripts/ralph.sh --dry-run` to identify what's missing
+
+---
+
+# GSD Universal Setup Guide
+
 ## Overview
 
 GSD Universal works in **any environment** with **any AI assistant** using only standard tools. This guide shows you how to set up GSD in your preferred environment.

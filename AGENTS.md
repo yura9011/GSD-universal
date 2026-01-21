@@ -36,10 +36,13 @@ Run these commands before marking any task complete:
 
 ## Ralph Loop Operations
 
-- Build mode: `./loop.sh build` or `./loop.ps1 -Mode build`
-- Plan mode: `./loop.sh plan` or `./loop.ps1 -Mode plan`
-- Dry run: `./loop.sh --dry-run` or `./loop.ps1 -DryRun`
-- Help: `./loop.sh --help` or `./loop.ps1 -Help`
+- Build mode: `./scripts/ralph.sh build` or `./scripts/ralph.ps1 -Mode build`
+- Plan mode: `./scripts/ralph.sh plan` or `./scripts/ralph.ps1 -Mode plan`
+- Manual mode: `./scripts/ralph.sh --manual` or `./scripts/ralph.ps1 -Manual`
+- Dry run: `./scripts/ralph.sh --dry-run` or `./scripts/ralph.ps1 -DryRun`
+- Help: `./scripts/ralph.sh --help` or `./scripts/ralph.ps1 -Help`
+
+Note: Universal Ralph works with any AI (ChatGPT, Claude, Kiro, etc.)
 
 ## File Structure Requirements
 
