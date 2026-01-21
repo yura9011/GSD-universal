@@ -62,21 +62,28 @@ Display banner:
 
 ## 2. Analyze Project Structure
 
-**With Kiro**: Use map-explorer subagent for context-efficient analysis:
+**Universal Pattern**: Use task-based codebase analysis:
 
-```
-Use the map-explorer subagent to analyze this codebase
-```
+### 2a. Initialize Analysis Tasks
 
-The subagent will:
-- Explore codebase in forked context (saves 99% of main conversation context)
-- Analyze architecture, tech stack, and patterns
-- Identify technical debt and conventions
-- Return concise summary for ARCHITECTURE.md
+Create analysis task queue using universal coordination:
 
-**Without Kiro**: Manually explore using commands below.
+1. **Create task directory**: `.gsd/tasks/`
+2. **Define analysis tasks**:
+   - Task 1: Directory structure analysis
+   - Task 2: Dependency mapping
+   - Task 3: Component identification
+   - Task 4: Integration point discovery
+   - Task 5: Technical debt assessment
 
-### 2a. Directory Analysis
+3. **Execute tasks** (sequential or parallel based on environment):
+   - Follow task queue patterns from `.gsd/lib/task-queue.md`
+   - Update progress in `.gsd/tasks/status.md`
+   - Document findings in each task's results section
+
+**Manual Alternative**: If task coordination unavailable, follow steps below manually.
+
+### 2b. Directory Analysis
 
 **PowerShell:**
 ```powershell
@@ -96,7 +103,7 @@ Identify:
 - Configuration locations
 - Asset directories
 
-### 2b. Entry Points
+### 2c. Entry Points
 
 Find main files:
 **PowerShell:**
@@ -111,7 +118,7 @@ Get-Content "package.json" | ConvertFrom-Json | Select-Object -ExpandProperty ma
 cat package.json | jq -r '.main'
 ```
 
-### 2c. Component Detection
+### 2d. Component Detection
 
 Scan for common patterns:
 - React components (`*.tsx`, `*.jsx`)

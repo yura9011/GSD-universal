@@ -49,19 +49,25 @@ What needs to be understood before planning?
 
 ## 3. Conduct Research
 
-**With Kiro**: Use research-agent subagent for context-efficient research:
+**Universal Pattern**: Use task-based research coordination:
 
-```
-Use the research-agent subagent to research [topic/question]
-```
+### 3a. Initialize Research Tasks
 
-The subagent will:
-- Search documentation and web resources in forked context
-- Compare alternatives and analyze trade-offs
-- Return structured recommendations
-- Keep main conversation clean (99% context savings)
+Create research task queue using universal coordination:
 
-**Without Kiro**: Manually research using methods below.
+1. **Create task directory**: `.gsd/tasks/`
+2. **Define research tasks** based on questions:
+   - Task 1: Documentation research for question 1
+   - Task 2: Alternative comparison for question 2
+   - Task 3: Integration analysis for question 3
+   - Task 4: Risk assessment and mitigation strategies
+
+3. **Execute research tasks** (sequential or parallel based on environment):
+   - Follow task queue patterns from `.gsd/lib/task-queue.md`
+   - Document findings in each task's results section
+   - Aggregate results into final RESEARCH.md
+
+**Manual Alternative**: If task coordination unavailable, research each question individually following the patterns below.
 
 Based on discovery level:
 
