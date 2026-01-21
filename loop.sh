@@ -10,7 +10,7 @@ set -euo pipefail
 MODE="build"
 MAX_ITERATIONS=50
 SLEEP_DURATION=2
-AI_CLI="claude"
+AI_CLI="kiro"  # Default to Kiro, can be changed to claude, openai, etc.
 VERBOSE=false
 
 # Colors for output
@@ -36,14 +36,15 @@ OPTIONS:
     -h, --help              Show this help message
     -i, --iterations NUM    Maximum iterations (default: 50)
     -s, --sleep NUM         Sleep duration between iterations (default: 2)
-    -c, --cli COMMAND       AI CLI command (default: claude)
+    -c, --cli COMMAND       AI CLI command (default: kiro)
     -v, --verbose           Verbose output
     --dry-run              Validate setup without executing
 
 EXAMPLES:
-    ./loop.sh                    # Build mode, default settings
+    ./loop.sh                    # Build mode, default settings (kiro)
     ./loop.sh plan               # Planning mode
     ./loop.sh -i 10 build        # Build mode, max 10 iterations
+    ./loop.sh -c claude build    # Use Claude CLI instead of Kiro
     ./loop.sh --dry-run          # Validate setup
 
 The Ralph Loop executes AI prompts autonomously until completion.
@@ -108,7 +109,7 @@ validate_setup() {
     # Check AI CLI
     if ! command -v "$AI_CLI" &> /dev/null; then
         log_error "AI CLI not found: $AI_CLI"
-        log_info "Install Claude CLI or specify different CLI with --cli option"
+        log_info "Install AI CLI (claude, kiro, openai, etc.) or specify different CLI with --cli option"
         ((errors++))
     fi
     

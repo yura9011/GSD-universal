@@ -41,7 +41,7 @@
 
 ### Active
 - **Issue**: Need to verify AI CLI availability for testing
-  - **Impact**: Cannot test actual Ralph Loop execution without Claude CLI
+  - **Impact**: Cannot test actual Ralph Loop execution without AI CLI (claude, kiro, openai, etc.)
   - **Workaround**: Use --dry-run mode for validation
   - **Status**: Monitoring
 

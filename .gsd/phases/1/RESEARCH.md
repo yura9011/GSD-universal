@@ -25,7 +25,7 @@ Ralph Loop is NOT a complex orchestration system. It's deliberately simple: a ba
 **The Pure Ralph Formula:**
 ```bash
 while true; do
-  cat PROMPT.md | claude-code
+  cat PROMPT.md | ai-cli
 done
 ```
 
@@ -110,7 +110,7 @@ Phase 1-4 - Main instructions: task, validation, commit
 
 **Geoff's Initial Minimal Loop (From Repository):**
 ```bash
-while :; do cat PROMPT.md | claude-code ; done
+while :; do cat PROMPT.md | ai-cli ; done
 ```
 
 **Enhanced Loop Example (From Repository):**
@@ -208,7 +208,7 @@ GSD Structure          Ralph Structure
 **Core Requirements:**
 - Bash script for Linux/Mac (`loop.sh`)
 - PowerShell script for Windows (`loop.ps1`)
-- Claude CLI or equivalent AI interface
+- AI CLI or equivalent AI interface (claude, kiro, openai, etc.)
 - Git for version control
 
 **Platform-Specific Considerations:**
@@ -370,7 +370,7 @@ Ralph will fail predictably. When it does:
 
 | Package | Version | Purpose |
 |---------|---------|---------|
-| Claude CLI | Latest | AI interface for autonomous execution |
+| AI CLI | Latest | AI interface for autonomous execution (claude, kiro, openai, etc.) |
 | Git | Any | Version control and atomic commits |
 | Bash | 4.0+ | Linux/Mac loop implementation |
 | PowerShell | 5.1+ | Windows loop implementation |

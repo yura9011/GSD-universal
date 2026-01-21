@@ -1,100 +1,108 @@
 # ROADMAP.md
 
-> **Current Milestone**: kiro-integration
-> **Goal**: Modernizar GSD para aprovechar capacidades nativas de Kiro IDE
+> **Current Milestone**: ralph-loop
+> **Goal**: Implement autonomous execution loop (Ralph) for GSD framework with Kiro IDE integration
 
 ## Must-Haves
 
-- [x] Sistema de Hooks para auto-validación (PostToolUse) en fase /execute
-- [x] Skills ejecutables que reemplacen templates estáticos
-- [x] Subagentes para operaciones que consumen mucho contexto (/map, /research-phase)
-- [x] Hooks PreToolUse para enforcement de Planning Lock
-- [x] Documentación actualizada con ejemplos de Kiro
-- [x] Scripts de validación embebidos en Skills
-- [x] Migración de comandos GSD a formato Kiro-compatible
-
-## Phases
-
-### Phase 1: Hooks Foundation
-**Status**: ✅ Complete
-**Objective**: Implementar sistema de hooks para auto-validación y enforcement de reglas GSD
-
-**Key Deliverables:**
-- PostToolUse hooks para validación automática de código
-- PreToolUse hooks para Planning Lock enforcement
-- Hook de validación de sintaxis (linters)
-- Scripts de validación en Python/PowerShell
-- Configuración de hooks en `.kiro/hooks/`
-
-### Phase 2: Skills Migration
-**Status**: ✅ Complete
-**Objective**: Convertir templates estáticos a Skills ejecutables con scripts embebidos
-
-**Key Deliverables:**
-- Skill para SPEC.md con validador programático
-- Skill para ROADMAP.md con validador de estructura
-- Skill para generación de commits atómicos
-- Skill para verificación empírica con evidencia
-- Scripts de validación embebidos en cada Skill
-- Skill para generación de commits atómicos
-- Skill para verificación empírica con evidencia
-- Scripts de validación embebidos en cada Skill
-
-### Phase 3: Subagent Integration
-**Status**: ✅ Complete
-**Objective**: Implementar subagentes para operaciones de alto contexto
-
-**Key Deliverables:**
-- Subagente para /map (context:fork, read-only)
-- Subagente para /research-phase (context:fork)
-- Subagente para /verify con paralelización
-- Configuración de subagentes en `.kiro/agents/`
-- Documentación de cuándo usar subagentes vs main conversation
-
-### Phase 4: Command Modernization
-**Status**: ✅ Complete
-**Objective**: Actualizar comandos GSD a formato Slash Commands de Kiro
-
-**Key Deliverables:**
-- Migrar 25 comandos GSD a `.kiro/commands/`
-- Agregar frontmatter con allowed-tools
-- Implementar argument-hint para cada comando
-- Agregar bash command execution donde sea necesario
-- Mantener compatibilidad con workflows existentes
-
-### Phase 5: Documentation & Testing
-**Status**: ⬜ Not Started
-**Objective**: Documentar nuevas capacidades y validar integración completa
-
-**Key Deliverables:**
-- Actualizar `.gsd/SYSTEM.md` con features de Kiro
-- Crear guías de uso para Hooks, Skills, Subagents
-- Ejemplos prácticos de cada feature
-- Tests de integración end-to-end
-- Guía de migración para usuarios existentes
+- [ ] Ralph Loop engine (loop.sh script) for autonomous execution
+- [ ] AGENTS.md operational manual for autonomous agents
+- [ ] PROMPT_build.md template for build mode execution
+- [ ] PROMPT_plan.md template for planning mode execution
+- [ ] Integration with existing GSD validation scripts
+- [ ] Backpressure validation system for quality gates
+- [ ] Cross-platform compatibility (Windows/Linux/Mac)
+- [ ] Documentation and usage examples
 
 ## Nice-to-Haves
 
-- [ ] Paralelización de verificaciones usando subagentes
-- [ ] Hooks de notificación para eventos importantes
-- [ ] Skills visuales (generación de diagramas de arquitectura)
-- [ ] Integración con MCP para herramientas externas
-- [ ] Dashboard interactivo de progreso del proyecto
+- [ ] Web interface for monitoring Ralph execution
+- [ ] Integration with CI/CD pipelines
+- [ ] Advanced error recovery mechanisms
+- [ ] Performance metrics and analytics
+- [ ] Multi-project Ralph orchestration
+
+## Phases
+
+### Phase 1: Core Ralph Engine
+**Status**: ⬜ Not Started
+**Objective**: Implement the basic Ralph Loop engine with autonomous execution capabilities
+
+**Key Deliverables:**
+- loop.sh script for autonomous execution
+- Cross-platform compatibility (PowerShell equivalent)
+- Basic error handling and recovery
+- Integration with existing validation scripts
+
+### Phase 2: Agent Operational System
+**Status**: ⬜ Not Started
+**Objective**: Create operational manual and prompt templates for autonomous agents
+
+**Key Deliverables:**
+- AGENTS.md operational manual
+- PROMPT_build.md for build mode
+- PROMPT_plan.md for planning mode
+- Validation integration with backpressure system
+
+### Phase 3: Kiro IDE Integration
+**Status**: ⬜ Not Started
+**Objective**: Integrate Ralph Loop with Kiro-specific features and capabilities
+
+**Key Deliverables:**
+- Kiro hooks integration for Ralph execution
+- Subagent support for autonomous operations
+- Skills integration for Ralph workflows
+- Slash command for Ralph control
+
+### Phase 4: Quality Gates & Validation
+**Status**: ⬜ Not Started
+**Objective**: Implement comprehensive validation and quality control systems
+
+**Key Deliverables:**
+- Backpressure validation system
+- Integration with existing GSD validation scripts
+- Error recovery and retry mechanisms
+- Quality metrics and reporting
+
+### Phase 5: Documentation & Examples
+**Status**: ⬜ Not Started
+**Objective**: Complete documentation and provide practical examples
+
+**Key Deliverables:**
+- Complete Ralph Loop documentation
+- Usage examples and tutorials
+- Best practices guide
+- Migration guide from manual to autonomous execution
 
 ## Timeline
 
-- **Phase 1**: 1 week (Hooks Foundation)
-- **Phase 2**: 1 week (Skills Migration)
-- **Phase 3**: 1 week (Subagent Integration)
-- **Phase 4**: 1 week (Command Modernization)
-- **Phase 5**: 1 week (Documentation & Testing)
+- **Phase 1**: 1 week (Core Ralph Engine)
+- **Phase 2**: 1 week (Agent Operational System)
+- **Phase 3**: 1 week (Kiro IDE Integration)
+- **Phase 4**: 1 week (Quality Gates & Validation)
+- **Phase 5**: 1 week (Documentation & Examples)
 
-**Total**: ~5 weeks (Target: 2026-02-15)
+**Total**: ~5 weeks (Target: 2026-03-01)
 
 ## Success Metrics
 
-- Zero syntax errors in generated code (hooks validation)
-- 90% reduction in manual verification steps
-- Context window usage reduced by 50% (subagents)
-- All 25 GSD commands working in Kiro
-- 100% test coverage for critical workflows
+- Ralph Loop can autonomously execute complete phases without human intervention
+- 95% success rate on validation scripts during autonomous execution
+- Zero manual intervention required for standard development workflows
+- Complete integration with existing GSD framework
+- Cross-platform compatibility verified on Windows, Linux, and Mac
+- Documentation enables users to implement Ralph in 15 minutes
+
+## Previous Milestones
+
+### kiro-integration (Completed 2026-01-20)
+**Goal**: Modernizar GSD para aprovechar capacidades nativas de Kiro IDE
+
+**Completed Deliverables:**
+- ✅ Sistema de Hooks para auto-validación (PostToolUse) en fase /execute
+- ✅ Skills ejecutables que reemplacen templates estáticos
+- ✅ Subagentes para operaciones que consumen mucho contexto (/map, /research-phase)
+- ✅ Hooks PreToolUse para enforcement de Planning Lock
+- ✅ Documentación actualizada con ejemplos de Kiro
+- ✅ Scripts de validación embebidos en Skills
+- ✅ Migración de comandos GSD a formato Kiro-compatible

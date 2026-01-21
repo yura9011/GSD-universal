@@ -6,7 +6,7 @@ param(
     [string]$Mode = "build",
     [int]$Iterations = 50,
     [int]$Sleep = 2,
-    [string]$CLI = "claude",
+    [string]$CLI = "kiro",  # Default to Kiro, can be changed to claude, openai, etc.
     [switch]$Verbose,
     [switch]$Help,
     [switch]$DryRun
@@ -31,15 +31,16 @@ OPTIONS:
     -Mode MODE              Execution mode (build|plan)
     -Iterations NUM         Maximum iterations (default: 50)
     -Sleep NUM              Sleep duration between iterations (default: 2)
-    -CLI COMMAND            AI CLI command (default: claude)
+    -CLI COMMAND            AI CLI command (default: kiro)
     -Verbose                Verbose output
     -Help                   Show this help message
     -DryRun                 Validate setup without executing
 
 EXAMPLES:
-    .\loop.ps1                           # Build mode, default settings
+    .\loop.ps1                           # Build mode, default settings (kiro)
     .\loop.ps1 -Mode plan                # Planning mode
     .\loop.ps1 -Iterations 10 -Mode build   # Build mode, max 10 iterations
+    .\loop.ps1 -CLI claude -Mode build   # Use Claude CLI instead of Kiro
     .\loop.ps1 -DryRun                   # Validate setup
 
 The Ralph Loop executes AI prompts autonomously until completion.
@@ -112,7 +113,7 @@ function Test-RalphSetup {
     }
     catch {
         Write-Error "AI CLI not found: $CLI"
-        Write-Info "Install Claude CLI or specify different CLI with -CLI option"
+        Write-Info "Install AI CLI (claude, kiro, openai, etc.) or specify different CLI with -CLI option"
         $errors++
     }
     

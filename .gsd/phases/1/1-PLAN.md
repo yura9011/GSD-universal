@@ -30,7 +30,7 @@ Implement the fundamental Ralph Loop scripts (loop.sh and loop.ps1) that provide
     - Sleep between iterations to prevent rate limiting
     - Exit codes for different failure modes
     
-    Use exact pattern from research: `while :; do cat PROMPT_${MODE}.md | claude-code ; done`
+    Use exact pattern from research: `while :; do cat PROMPT_${MODE}.md | $AI_CLI ; done`
     
     What to avoid and WHY:
     - Complex orchestration logic (Ralph's power is in simplicity)
