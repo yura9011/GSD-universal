@@ -15,110 +15,112 @@ Transform GSD from "GSD for Kiro" to "GSD Universal" - a pure protocol that work
 
 ## The Problem
 
-Currently, GSD has IDE-specific dependencies:
-- Kiro's `getDiagnostics` for syntax checking
-- Kiro's `invokeSubAgent` for parallel operations  
-- Kiro-specific hooks and skills
-- IDE-specific validation patterns
+Currently, GSD depends on IDE-specific features:
+- `getDiagnostics` (Kiro-specific syntax checking)
+- `invokeSubAgent` (Kiro-specific parallel operations)  
+- IDE-specific hooks, skills, powers
+- Console-specific commands and validations
 
-This limits adoption and creates vendor lock-in.
+This creates **fundamental dependency** on specific tools, limiting true portability.
 
 ## The Solution
 
-Create **GSD Universal Protocol** - a pure methodology that:
-- Uses only common capabilities available in ALL AI IDEs
-- Defines conventions instead of code dependencies
-- Provides IDE-specific adapters without changing core
-- Maintains 100% backward compatibility
+Create **GSD Pure Protocol** - a methodology that:
+- Uses **ONLY** universal capabilities (file system, git, standard shell commands)
+- Works with **ANY** AI assistant (human, Claude, GPT, Gemini, local models)
+- Requires **NO** specific IDE, console, or tool dependencies
+- Functions identically whether you're using Kiro, VS Code, Notepad, or just terminal + AI chat
+
+**Core Principle**: If it requires a specific tool to work, it's not universal.
 
 ## Success Vision
 
 **By completion:**
-- Any developer can use GSD in their preferred AI IDE
-- GSD becomes the de facto standard for AI development methodology
-- Zero vendor lock-in - switch IDEs without changing workflow
-- Community adoption across all AI IDE ecosystems
+- GSD works with **any AI assistant** in **any environment**
+- Zero dependencies on specific IDEs, consoles, or tools
+- Works identically in terminal + ChatGPT as in Kiro as in VS Code + Copilot
+- Pure methodology based on universal primitives (files, git, shell)
 
 ## Must-Haves
 
-### Core Protocol
-- [ ] IDE-agnostic validation system (no getDiagnostics dependency)
-- [ ] Universal subagent pattern (works without invokeSubAgent)
-- [ ] Generic file structure (no .kiro/ dependencies)
-- [ ] Cross-IDE workflow compatibility
+### Core Independence
+- [ ] Zero dependencies on specific IDEs, consoles, or AI tools
+- [ ] Works with any AI assistant (ChatGPT, Claude, Gemini, local models)
+- [ ] Uses only universal primitives (files, git, standard shell commands)
+- [ ] Identical behavior in any environment (terminal, IDE, web chat)
 
-### Universal Adapters
-- [ ] Kiro adapter (maintains current functionality)
-- [ ] Claude Code adapter
-- [ ] Cursor/Windsurf adapter  
-- [ ] Generic IDE adapter (fallback)
+### Pure Protocol
+- [ ] File-based state management (no tool-specific storage)
+- [ ] Standard shell command validation (no getDiagnostics dependency)
+- [ ] Git-based workflow tracking (no IDE-specific features)
+- [ ] Markdown-based everything (no proprietary formats)
 
-### Ralph Loop Universal
-- [ ] Pure protocol-based Ralph (no CLI dependencies)
-- [ ] Works natively in any AI IDE
-- [ ] Self-executing within IDE context
-- [ ] Universal prompt templates
+### Universal Ralph Loop
+- [ ] Works without any specific AI CLI
+- [ ] Self-contained prompt templates
+- [ ] Standard file operations only
+- [ ] Cross-platform shell compatibility
 
-### Documentation & Adoption
-- [ ] GSD Universal specification
-- [ ] Migration guide from IDE-specific to universal
-- [ ] Community adoption toolkit
-- [ ] Multi-IDE examples and tutorials
+### Backward Compatibility
+- [ ] Existing GSD projects work unchanged
+- [ ] Current workflows remain functional
+- [ ] Kiro optimizations available but optional
+- [ ] Graceful degradation when tools unavailable
 
 ## Nice-to-Haves
 
-- [ ] GSD Universal CLI for non-IDE environments
-- [ ] Browser-based GSD interface
-- [ ] Integration with popular code editors (VS Code, etc.)
-- [ ] GSD Universal marketplace/registry
+- [ ] Tool-specific optimizations (when available)
+- [ ] IDE integration helpers (optional enhancements)
+- [ ] Web-based GSD interface
 - [ ] Community plugin ecosystem
+- [ ] Integration guides for popular tools
 
 ## Phases
 
-### Phase 1: Core Protocol Abstraction
-**Objective**: Extract IDE-agnostic core from current GSD
+### Phase 1: Pure Protocol Foundation
+**Objective**: Remove ALL tool dependencies from GSD core
 
 **Key Deliverables:**
-- Universal validation protocol (replaces getDiagnostics)
-- Generic subagent pattern (replaces invokeSubAgent)
-- IDE-agnostic file structure
-- Universal workflow definitions
+- Standard shell command validation (replaces getDiagnostics)
+- File-based parallel processing pattern (replaces invokeSubAgent)
+- Universal file structure (no .kiro/, .claude/, etc. dependencies)
+- Pure markdown workflow definitions
 
-### Phase 2: Adapter System
-**Objective**: Create IDE-specific adapters that implement universal protocol
-
-**Key Deliverables:**
-- Kiro adapter (backward compatibility)
-- Claude Code adapter
-- Generic IDE adapter
-- Adapter interface specification
-
-### Phase 3: Ralph Universal
-**Objective**: Transform Ralph Loop into pure protocol
+### Phase 2: Universal Ralph Loop
+**Objective**: Make Ralph Loop completely self-contained
 
 **Key Deliverables:**
-- Protocol-based Ralph (no external CLI)
-- Self-executing within IDE context
-- Universal prompt templates
-- Cross-IDE compatibility
+- Prompt templates with no CLI dependencies
+- Standard file operations only
+- Cross-platform shell compatibility
+- Self-executing within any environment
+
+### Phase 3: Validation & Testing
+**Objective**: Prove GSD works in any environment
+
+**Key Deliverables:**
+- Terminal + web chat testing
+- Multiple editor + AI combinations
+- Cross-platform validation
+- Performance benchmarking
 
 ### Phase 4: Documentation & Migration
-**Objective**: Enable community adoption across all IDEs
+**Objective**: Enable adoption in any environment
 
 **Key Deliverables:**
-- GSD Universal specification
-- Migration guides for each IDE
+- GSD Pure Protocol specification
+- Environment-agnostic setup guides
+- Migration from tool-specific versions
 - Community adoption toolkit
-- Multi-IDE examples
 
-### Phase 5: Community & Ecosystem
-**Objective**: Establish GSD Universal as the standard
+### Phase 5: Optimization Layer
+**Objective**: Add optional tool-specific enhancements
 
 **Key Deliverables:**
-- Community governance model
-- Plugin/extension ecosystem
-- Integration partnerships
-- Adoption metrics and feedback
+- Kiro optimization layer (optional)
+- VS Code integration helpers (optional)
+- IDE-specific shortcuts (optional)
+- Performance optimizations (optional)
 
 ## Timeline
 
@@ -164,21 +166,67 @@ Create **GSD Universal Protocol** - a pure methodology that:
 - Migration support for existing users
 - Feedback collection and iteration
 
-## Risks and Mitigations
+## Core Independence Challenges
 
-### Technical Risks
-- **Risk**: Some IDE-specific features can't be abstracted
-- **Mitigation**: Create graceful degradation patterns and optional enhancements
+### Technical Challenges
 
-- **Risk**: Performance loss from abstraction layer
-- **Mitigation**: Optimize adapters and provide direct IDE integration where beneficial
+#### Validation Without Tool Dependencies
+- **Challenge**: Replace `getDiagnostics` with standard shell commands
+- **Solution**: Use language-specific linters via shell (eslint, pylint, etc.)
+- **Fallback**: Basic syntax checking via compilation attempts
 
-### Adoption Risks
-- **Risk**: Community resistance to change
-- **Mitigation**: Maintain 100% backward compatibility and provide clear migration paths
+#### Parallel Processing Without invokeSubAgent
+- **Challenge**: Coordinate multiple tasks without IDE-specific features
+- **Solution**: File-based task queues and status tracking
+- **Fallback**: Sequential execution with clear progress indicators
 
-- **Risk**: IDE vendors don't support standardization
-- **Mitigation**: Focus on user value and community adoption to drive vendor support
+#### State Management Without Tool Storage
+- **Challenge**: Maintain state without .kiro/, .claude/, etc. directories
+- **Solution**: Pure markdown files with standardized formats
+- **Fallback**: Git-based state tracking and recovery
+
+### Environment Variations
+
+#### Shell Compatibility
+- **Challenge**: Different shells (bash, zsh, cmd, PowerShell) have different capabilities
+- **Solution**: Cross-platform scripts with feature detection
+- **Fallback**: Lowest common denominator commands
+
+#### File System Differences
+- **Challenge**: Path separators, permissions, case sensitivity vary
+- **Solution**: Normalized path handling and permission checks
+- **Fallback**: Clear error messages for unsupported operations
+
+#### Git Availability
+- **Challenge**: Not all environments have git installed
+- **Solution**: Git availability detection and alternative workflows
+- **Fallback**: Manual file-based versioning instructions
+
+### AI Assistant Variations
+
+#### Context Handling
+- **Challenge**: Different AIs have different context limits and formats
+- **Solution**: Modular prompts that work within any context limit
+- **Fallback**: Progressive disclosure and context summarization
+
+#### Capability Differences
+- **Challenge**: Some AIs can't execute code, others can't access files
+- **Solution**: Clear capability requirements and manual alternatives
+- **Fallback**: Human-executable instructions for all operations
+
+## Mitigation Strategy
+
+### Core Principles
+1. **Universal Primitives Only**: Files, git, standard shell commands
+2. **Graceful Degradation**: Always provide manual alternatives
+3. **Clear Requirements**: Document what's needed for each operation
+4. **No Magic**: Every operation should be understandable and reproducible
+
+### Implementation Approach
+1. **Start Pure**: Build with zero dependencies first
+2. **Add Optimizations**: Layer tool-specific improvements on top
+3. **Test Everywhere**: Validate in minimal environments
+4. **Document Everything**: Clear setup for any environment
 
 ## Revolutionary Impact
 
@@ -188,4 +236,4 @@ This milestone positions GSD to become:
 - **The community standard** - adopted across all AI IDE ecosystems
 - **Future-proof foundation** - works with IDEs that don't exist yet
 
-**This is our chance to create the universal standard for AI-assisted development.**
+**This is our chance to create the first truly universal methodology for AI-assisted development - one that works everywhere, depends on nothing, and enables true freedom of choice.**
