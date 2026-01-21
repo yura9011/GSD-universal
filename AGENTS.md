@@ -4,10 +4,16 @@
 
 Run these commands before marking any task complete:
 
-- Consolidated validation: `./scripts/validate.sh --all` (Linux/Mac)
-- Consolidated validation: `./scripts/validate.ps1 -All` (Windows)
-- Legacy universal: `./scripts/validate-universal.sh` or `./scripts/validate-universal.ps1`
-- Legacy all: `./scripts/validate-all.sh` or `./scripts/validate-all.ps1`
+**Windows**:
+- Consolidated validation: `./scripts/validate.ps1 -All`
+- Specific validation: `./scripts/validate.ps1 -Code -Workflows`
+- Run bash scripts: `./scripts/run-bash.ps1 ./scripts/validate.sh --all`
+
+**Linux/Mac**:
+- Consolidated validation: `./scripts/validate.sh --all`
+- Specific validation: `./scripts/validate.sh --code --workflows`
+
+**All platforms**:
 - Git status: `git status --porcelain` (should be clean after commit)
 
 ## Project Conventions
