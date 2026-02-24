@@ -66,30 +66,71 @@ function Write-ErrorMsg {
     Write-Host "[ERROR] $Message" -ForegroundColor Red
 }
 
+# Detect file structure (v1 or v2)
+function Get-FileStructure {
+    if (Test-Path ".gsd/config/AGENTS.md") {
+        return "v2"
+    }
+    return "v1"
+}
+
+# Get file path based on structure version
+function Get-FilePath {
+    param([string]$File)
+    
+    $structure = Get-FileStructure
+    
+    switch -Regex ($File) {
+        "AGENTS\.md" {
+            if ($structure -eq "v2") { return ".gsd/config/AGENTS.md" }
+            return "AGENTS.md"
+        }
+        "PROMPT_(build|plan)\.md" {
+            if ($structure -eq "v2") { return ".gsd/config/$File" }
+            return $File
+        }
+        "IMPLEMENTATION_PLAN\.md|JOURNAL\.md|STATE\.md" {
+            if ($structure -eq "v2") { return ".gsd/state/$File" }
+            return $File
+        }
+        "specs" {
+            if ($structure -eq "v2") { return ".gsd/specs" }
+            return "specs"
+        }
+        default {
+            return $File
+        }
+    }
+}
+
 # Validate setup
 function Test-RalphSetup {
     $errors = 0
+    $structure = Get-FileStructure
     
-    Write-Info "Validating Ralph Loop setup..."
+    Write-Info "Validating Ralph Loop setup... (structure: $structure)"
     
     # Check required files
-    $promptFile = "PROMPT_$Mode.md"
+    $promptFile = Get-FilePath "PROMPT_$Mode.md"
     if (-not (Test-Path $promptFile)) {
         Write-ErrorMsg "Missing prompt file: $promptFile"
         $errors++
     }
     
-    if (-not (Test-Path "IMPLEMENTATION_PLAN.md")) {
+    $implPlan = Get-FilePath "IMPLEMENTATION_PLAN.md"
+    if (-not (Test-Path $implPlan)) {
         Write-ErrorMsg "Missing IMPLEMENTATION_PLAN.md"
         $errors++
     }
     
-    if (-not (Test-Path "AGENTS.md")) {
+    $agentsFile = Get-FilePath "AGENTS.md"
+    if (-not (Test-Path $agentsFile)) {
         Write-ErrorMsg "Missing AGENTS.md"
         $errors++
     }
     
-    if (-not (Test-Path "specs" -PathType Container)) {
+    $specsDir = Get-FilePath "specs"
+    if (-not (Test-Path $specsDir -PathType Container)) {
         Write-ErrorMsg "Missing specs/ directory"
         $errors++
     }
@@ -104,8 +145,8 @@ function Test-RalphSetup {
     }
     
     # Check validation scripts (optional)
-    if (Test-Path "scripts/validate.ps1") {
-        Write-Info "Found validation script: scripts/validate.ps1"
+    if ((Test-Path ".gsd/scripts/validate.ps1") -or (Test-Path "scripts/validate.ps1")) {
+        Write-Info "Found validation script"
     }
     else {
         Write-Warning "Validation script not found (optional)"
@@ -159,9 +200,17 @@ function Wait-ForUser {
 function Invoke-Validation {
     Write-Info "Running validation (backpressure)..."
     
-    if (Test-Path "scripts/validate.ps1") {
+    $validateScript = $null
+    if (Test-Path ".gsd/scripts/validate.ps1") {
+        $validateScript = ".gsd/scripts/validate.ps1"
+    }
+    elseif (Test-Path "scripts/validate.ps1") {
+        $validateScript = "scripts/validate.ps1"
+    }
+    
+    if ($validateScript) {
         try {
-            & "scripts/validate.ps1" -All
+            & $validateScript -All
             Write-Success "Validation passed"
             return $true
         }
@@ -218,7 +267,7 @@ function Invoke-CommitPrompt {
 
 # Main Ralph Loop
 function Start-RalphLoop {
-    $promptFile = "PROMPT_$Mode.md"
+    $promptFile = Get-FilePath "PROMPT_$Mode.md"
     
     Write-Info "Starting Universal Ralph Loop"
     Write-Info "Mode: $Mode"

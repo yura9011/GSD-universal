@@ -72,30 +72,67 @@ log_error() {
     echo -e "${RED}[ERROR]${NC} $1"
 }
 
+# Detect file structure (v1 or v2)
+detect_structure() {
+    if [[ -f ".gsd/config/AGENTS.md" ]]; then
+        echo "v2"
+    else
+        echo "v1"
+    fi
+}
+
+# Get file path based on structure version
+get_file_path() {
+    local file="$1"
+    local structure=$(detect_structure)
+    
+    case "$file" in
+        AGENTS.md)
+            [[ "$structure" == "v2" ]] && echo ".gsd/config/AGENTS.md" || echo "AGENTS.md"
+            ;;
+        PROMPT_build.md|PROMPT_plan.md)
+            [[ "$structure" == "v2" ]] && echo ".gsd/config/$file" || echo "$file"
+            ;;
+        IMPLEMENTATION_PLAN.md|JOURNAL.md|STATE.md)
+            [[ "$structure" == "v2" ]] && echo ".gsd/state/$file" || echo "$file"
+            ;;
+        specs)
+            [[ "$structure" == "v2" ]] && echo ".gsd/specs" || echo "specs"
+            ;;
+        *)
+            echo "$file"
+            ;;
+    esac
+}
+
 # Validate setup
 validate_setup() {
     local errors=0
+    local structure=$(detect_structure)
     
-    log_info "Validating Ralph Loop setup..."
+    log_info "Validating Ralph Loop setup... (structure: $structure)"
     
     # Check required files
-    local prompt_file="PROMPT_${MODE}.md"
+    local prompt_file=$(get_file_path "PROMPT_${MODE}.md")
     if [[ ! -f "$prompt_file" ]]; then
         log_error "Missing prompt file: $prompt_file"
         ((errors++))
     fi
     
-    if [[ ! -f "IMPLEMENTATION_PLAN.md" ]]; then
+    local impl_plan=$(get_file_path "IMPLEMENTATION_PLAN.md")
+    if [[ ! -f "$impl_plan" ]]; then
         log_error "Missing IMPLEMENTATION_PLAN.md"
         ((errors++))
     fi
     
-    if [[ ! -f "AGENTS.md" ]]; then
+    local agents_file=$(get_file_path "AGENTS.md")
+    if [[ ! -f "$agents_file" ]]; then
         log_error "Missing AGENTS.md"
         ((errors++))
     fi
     
-    if [[ ! -d "specs" ]]; then
+    local specs_dir=$(get_file_path "specs")
+    if [[ ! -d "$specs_dir" ]]; then
         log_error "Missing specs/ directory"
         ((errors++))
     fi
@@ -107,8 +144,8 @@ validate_setup() {
     fi
     
     # Check validation scripts (optional but recommended)
-    if [[ -f "scripts/validate.sh" ]]; then
-        log_info "Found validation script: scripts/validate.sh"
+    if [[ -f ".gsd/scripts/validate.sh" ]] || [[ -f "scripts/validate.sh" ]]; then
+        log_info "Found validation script"
     else
         log_warning "Validation script not found (optional)"
     fi
@@ -158,8 +195,15 @@ wait_for_user() {
 run_validation() {
     log_info "Running validation (backpressure)..."
     
-    if [[ -x "./scripts/validate.sh" ]]; then
-        if ./scripts/validate.sh --all; then
+    local validate_script=""
+    if [[ -x "./.gsd/scripts/validate.sh" ]]; then
+        validate_script="./.gsd/scripts/validate.sh"
+    elif [[ -x "./scripts/validate.sh" ]]; then
+        validate_script="./scripts/validate.sh"
+    fi
+    
+    if [[ -n "$validate_script" ]]; then
+        if $validate_script --all; then
             log_success "Validation passed"
             return 0
         else
@@ -217,7 +261,7 @@ prompt_commit() {
 
 # Main Ralph Loop
 run_ralph_loop() {
-    local prompt_file="PROMPT_${MODE}.md"
+    local prompt_file=$(get_file_path "PROMPT_${MODE}.md")
     
     log_info "Starting Universal Ralph Loop"
     log_info "Mode: $MODE"

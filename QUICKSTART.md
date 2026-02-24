@@ -142,7 +142,10 @@ Now execute the plans using Ralph Loop:
 **Option A: Interactive Mode** (works with any AI)
 
 ```bash
-# Start Ralph Loop
+# v2 structure (recommended)
+./.gsd/scripts/loop.sh
+
+# v1 structure (legacy)
 ./loop.sh
 
 # Ralph shows you the prompt
@@ -158,13 +161,17 @@ Now execute the plans using Ralph Loop:
 
 ```bash
 # If you have claude, kiro, or other AI CLI
-./loop.sh --auto
+./.gsd/scripts/loop.sh --auto  # v2
+# or
+./loop.sh --auto  # v1
 
 # Ralph feeds prompts to AI automatically
 # Validates after each task
 # Commits when validation passes
 # Continues until all tasks done
 ```
+
+**Note**: Scripts automatically detect v1 or v2 structure.
 
 **Time**: Varies (AI does the work)
 
@@ -220,6 +227,10 @@ git commit -m "Add GSD framework"
 
 ```bash
 # Generate codebase intelligence
+# v2 structure
+./.gsd/scripts/index-codebase.sh
+
+# v1 structure (legacy)
 ./scripts/index-codebase.sh
 
 # This creates .gsd/intel/ with:
@@ -271,7 +282,7 @@ From here, same as new project:
 ```
 1. Update ROADMAP.md with new phase
 2. Plan the phase: Read .gsd/workflows/plan.md
-3. Execute: Run ./loop.sh
+3. Execute: Run ./.gsd/scripts/loop.sh (or ./loop.sh for v1)
 4. Verify: Read .gsd/workflows/verify.md
 5. Commit and continue
 ```
@@ -280,7 +291,7 @@ From here, same as new project:
 
 ```
 1. Document bug in IMPLEMENTATION_PLAN.md
-2. Execute fix: Run ./loop.sh
+2. Execute fix: Run ./.gsd/scripts/loop.sh (or ./loop.sh for v1)
 3. Verify fix works
 4. Commit
 ```
@@ -290,7 +301,7 @@ From here, same as new project:
 ```
 1. Create refactoring phase in ROADMAP.md
 2. Plan refactoring: Read .gsd/workflows/plan.md
-3. Execute: Run ./loop.sh with tests as backpressure
+3. Execute: Run ./.gsd/scripts/loop.sh with tests as backpressure
 4. Verify: All tests pass, behavior unchanged
 5. Commit
 ```
@@ -341,13 +352,23 @@ Before marking any task complete, run validation:
 
 **Windows**:
 ```powershell
-./scripts/validate.ps1 -All
+# v2 structure
+.\.gsd\scripts\validate.ps1 -All
+
+# v1 structure (legacy)
+.\scripts\validate.ps1 -All
 ```
 
 **Mac/Linux**:
 ```bash
+# v2 structure
+./.gsd/scripts/validate.sh --all
+
+# v1 structure (legacy)
 ./scripts/validate.sh --all
 ```
+
+**Note**: Scripts automatically detect your structure version.
 
 **What it checks**:
 - Code syntax (language-specific linters)
@@ -403,15 +424,15 @@ Before marking any task complete, run validation:
 ### "Ralph Loop doesn't work"
 
 **Solution**:
-1. Check you have `PROMPT_build.md` or `PROMPT_plan.md`
-2. Check you have `AGENTS.md`
-3. Try `./loop.sh --help` for usage
+1. Check you have `PROMPT_build.md` or `PROMPT_plan.md` (v1) or `.gsd/config/PROMPT_build.md` (v2)
+2. Check you have `AGENTS.md` (v1) or `.gsd/config/AGENTS.md` (v2)
+3. Try `./.gsd/scripts/loop.sh --help` for usage (or `./loop.sh --help` for v1)
 4. Use interactive mode if automated fails
 
 ### "AI makes inconsistent changes"
 
 **Solution**:
-1. Index your codebase: `./scripts/index-codebase.sh`
+1. Index your codebase: `./.gsd/scripts/index-codebase.sh` (or `./scripts/index-codebase.sh` for v1)
 2. AI will read `.gsd/intel/summary.md` for conventions
 3. Be explicit about patterns in prompts
 
@@ -445,10 +466,11 @@ Before marking any task complete, run validation:
 
 ### Advanced Features
 
-- **Codebase Intelligence**: `./scripts/index-codebase.sh`
+- **Codebase Intelligence**: `./.gsd/scripts/index-codebase.sh` (or `./scripts/index-codebase.sh` for v1)
 - **Parallel Execution**: Read `.gsd/protocols/parallel.md`
 - **Git Hooks**: Automatic validation and indexing
 - **Custom Workflows**: Create your own in `.gsd/workflows/`
+- **Structure Migration**: Use `.gsd/scripts/migrate-to-v2.sh` to upgrade to v2
 
 ---
 

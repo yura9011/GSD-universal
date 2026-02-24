@@ -63,10 +63,12 @@ Our implementation makes Ralph Loop truly universal:
 
 ### Quick Start
 
-1. Ensure setup complete: `./scripts/ralph.sh --dry-run`
-2. Start build mode: `./scripts/ralph.sh build`
+1. Ensure setup complete: `./.gsd/scripts/ralph.sh --dry-run` (or `./scripts/ralph.sh` for v1)
+2. Start build mode: `./.gsd/scripts/ralph.sh build` (or `./scripts/ralph.sh` for v1)
 3. Execute prompts with your AI assistant
 4. Let Ralph coordinate validation and commits
+
+**Note**: Scripts automatically detect v1 or v2 structure.
 
 ### Modes
 
@@ -308,21 +310,66 @@ Every verification needs proof (screenshots, command output, test results).
 
 ## File Structure
 
+**Note**: GSD v2 introduces a cleaner file structure. Scripts automatically detect and work with both old (v1) and new (v2) structures.
+
+### Structure v2 (Recommended - Clean Root)
+
+```
+Your Project/
+├── README.md            # Project overview
+├── QUICKSTART.md        # Getting started
+├── LICENSE              # License file
+├── .gitignore           # Git ignore rules
+├── install.sh / .bat    # Quick install (symlinks)
+│
+├── .gsd/                # GSD Framework (everything)
+│   ├── config/          # Agent configuration
+│   │   ├── AGENTS.md
+│   │   ├── PROMPT_build.md
+│   │   └── PROMPT_plan.md
+│   │
+│   ├── docs/            # Documentation
+│   │   ├── CHANGELOG.md
+│   │   ├── DECISIONS.md
+│   │   ├── GLOSSARY.md
+│   │   ├── GSD-STYLE.md
+│   │   └── ROADMAP.md
+│   │
+│   ├── state/           # Project state
+│   │   ├── IMPLEMENTATION_PLAN.md
+│   │   ├── JOURNAL.md
+│   │   └── STATE.md
+│   │
+│   ├── specs/           # Specifications
+│   ├── workflows/       # 25+ workflow definitions
+│   ├── templates/       # Document templates
+│   ├── protocols/       # Universal protocols
+│   ├── scripts/         # Executable scripts
+│   │   ├── validate.sh/ps1
+│   │   ├── ralph.sh/ps1
+│   │   ├── loop.sh/ps1
+│   │   └── install.sh/ps1
+│   └── VERSION          # Framework version
+│
+└── src/                 # Your source code
+```
+
+### Structure v1 (Legacy - Still Supported)
+
 ```
 Your Project/
 ├── SPEC.md              # Project specification
 ├── ROADMAP.md           # Phases and progress
 ├── STATE.md             # Current position
-├── ARCHITECTURE.md      # System design
-├── DECISIONS.md         # Architecture decisions
-├── JOURNAL.md           # Session log
+├── AGENTS.md            # Agent configuration
+├── PROMPT_build.md      # Build mode prompt
+├── PROMPT_plan.md       # Plan mode prompt
 │
 ├── .gsd/                # System files
 │   ├── workflows/       # 25 workflow definitions
 │   ├── templates/       # 20+ document templates
 │   ├── protocols/       # Universal protocols
-│   ├── lib/             # Reusable components
-│   └── examples/        # Usage examples
+│   └── lib/             # Reusable components
 │
 ├── scripts/             # Executable scripts
 │   ├── validate.sh      # Validation (bash)
@@ -331,10 +378,10 @@ Your Project/
 │   └── ralph.ps1        # Ralph coordinator (PowerShell)
 │
 ├── loop.sh              # Ralph Loop (bash)
-├── loop.ps1             # Ralph Loop (PowerShell)
-├── PROMPT_build.md      # Build mode prompt
-└── PROMPT_plan.md       # Plan mode prompt
+└── loop.ps1             # Ralph Loop (PowerShell)
 ```
+
+**Migration**: Use `.gsd/scripts/migrate-to-v2.sh` (or `.ps1`) to migrate from v1 to v2.
 
 ## Universal Protocols
 
@@ -372,13 +419,23 @@ Run validation scripts to verify structure:
 
 **Windows:**
 ```powershell
+# v2 structure
+.\.gsd\scripts\validate.ps1 -All
+
+# v1 structure (legacy)
 .\scripts\validate.ps1 -All
 ```
 
 **Linux/Mac:**
 ```bash
+# v2 structure
+./.gsd/scripts/validate.sh --all
+
+# v1 structure (legacy)
 ./scripts/validate.sh --all
 ```
+
+**Note**: Scripts automatically detect your structure version.
 
 ## Example Workflow
 
@@ -405,6 +462,10 @@ cat .gsd/workflows/progress.md
 Or use Ralph Loop for autonomous execution:
 
 ```bash
+# v2 structure
+./.gsd/scripts/loop.sh build
+
+# v1 structure (legacy)
 ./loop.sh build
 ```
 
