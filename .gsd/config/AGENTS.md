@@ -58,6 +58,14 @@ Run these commands before marking any task complete:
 
 Note: Universal Ralph works with any AI (ChatGPT, Claude, Kiro, etc.)
 
+## Memory System
+
+- View recent: `./scripts/memory-recent.sh --limit 5` or `./scripts/memory-recent.ps1 -Limit 5`
+- Search: `./scripts/memory-search.sh "query"` or `./scripts/memory-search.ps1 "query"`
+- Add entry: `./scripts/memory-add.sh TYPE --template` or `./scripts/memory-add.ps1 TYPE -Template`
+- Types: journal, decision, pattern, learning
+- Auto-loads at session start, prompts at session end
+
 ## File Structure Requirements
 
 - PROMPT_build.md and PROMPT_plan.md must exist

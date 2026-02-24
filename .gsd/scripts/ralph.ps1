@@ -231,6 +231,58 @@ function Test-GitChanges {
     return ($status.Length -gt 0)
 }
 
+# Load memory context
+function Load-MemoryContext {
+    $memoryScript = $null
+    
+    if (Test-Path ".gsd/scripts/memory-recent.ps1") {
+        $memoryScript = ".gsd/scripts/memory-recent.ps1"
+    }
+    elseif (Test-Path "scripts/memory-recent.ps1") {
+        $memoryScript = "scripts/memory-recent.ps1"
+    }
+    
+    if ($memoryScript) {
+        Write-Info "Loading recent memory context..."
+        Write-Host ""
+        Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        Write-Host " RECENT MEMORY CONTEXT"
+        Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        Write-Host ""
+        & $memoryScript -Limit 3
+        Write-Host ""
+        Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        Write-Host ""
+    }
+}
+
+# Prompt for journal entry
+function Invoke-JournalPrompt {
+    $memoryScript = $null
+    
+    if (Test-Path ".gsd/scripts/memory-add.ps1") {
+        $memoryScript = ".gsd/scripts/memory-add.ps1"
+    }
+    elseif (Test-Path "scripts/memory-add.ps1") {
+        $memoryScript = "scripts/memory-add.ps1"
+    }
+    
+    if ($memoryScript) {
+        Write-Host ""
+        Write-Info "Would you like to document this session? (y/n)"
+        $response = Read-Host
+        
+        if ($response -eq "y") {
+            Write-Info "Opening journal template..."
+            & $memoryScript journal -Template
+            Write-Success "Journal entry created"
+        }
+        else {
+            Write-Info "Skipping journal entry"
+        }
+    }
+}
+
 # Prompt for commit
 function Invoke-CommitPrompt {
     param([int]$Iteration)
@@ -275,6 +327,9 @@ function Start-RalphLoop {
     Write-Info "Manual mode: $Manual"
     Write-Host ""
     
+    # Load recent memory context
+    Load-MemoryContext
+    
     # Create session log directory
     New-Item -ItemType Directory -Path ".ralph" -Force | Out-Null
     $sessionLog = ".ralph/session-$(Get-Date -Format 'yyyyMMdd-HHmmss').log"
@@ -307,6 +362,9 @@ function Start-RalphLoop {
         else {
             Write-Info "No changes detected"
         }
+        
+        # Prompt for journal entry
+        Invoke-JournalPrompt
         
         # Ask to continue
         Write-Host ""

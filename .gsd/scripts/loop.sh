@@ -225,6 +225,55 @@ check_git_changes() {
     fi
 }
 
+# Load memory context
+load_memory_context() {
+    local memory_script=""
+    
+    if [[ -x ".gsd/scripts/memory-recent.sh" ]]; then
+        memory_script=".gsd/scripts/memory-recent.sh"
+    elif [[ -x "./scripts/memory-recent.sh" ]]; then
+        memory_script="./scripts/memory-recent.sh"
+    fi
+    
+    if [[ -n "$memory_script" ]]; then
+        log_info "Loading recent memory context..."
+        echo ""
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo " RECENT MEMORY CONTEXT"
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo ""
+        $memory_script --limit 3 || true
+        echo ""
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo ""
+    fi
+}
+
+# Prompt for journal entry
+prompt_journal() {
+    local memory_script=""
+    
+    if [[ -x ".gsd/scripts/memory-add.sh" ]]; then
+        memory_script=".gsd/scripts/memory-add.sh"
+    elif [[ -x "./scripts/memory-add.sh" ]]; then
+        memory_script="./scripts/memory-add.sh"
+    fi
+    
+    if [[ -n "$memory_script" ]]; then
+        echo ""
+        log_info "Would you like to document this session? (y/n)"
+        read -r response
+        
+        if [[ "$response" == "y" ]]; then
+            log_info "Opening journal template..."
+            $memory_script journal --template
+            log_success "Journal entry created"
+        else
+            log_info "Skipping journal entry"
+        fi
+    fi
+}
+
 # Prompt for commit
 prompt_commit() {
     echo ""
@@ -269,6 +318,9 @@ run_ralph_loop() {
     log_info "Manual mode: $MANUAL_MODE"
     echo ""
     
+    # Load recent memory context
+    load_memory_context
+    
     # Create session log directory
     mkdir -p .ralph
     local session_log=".ralph/session-$(date +%Y%m%d-%H%M%S).log"
@@ -299,6 +351,9 @@ run_ralph_loop() {
         else
             log_info "No changes detected"
         fi
+        
+        # Prompt for journal entry
+        prompt_journal
         
         # Ask to continue
         echo ""
