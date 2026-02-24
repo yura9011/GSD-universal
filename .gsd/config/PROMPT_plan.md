@@ -242,3 +242,45 @@ This prompt integrates with GSD framework:
 - Atomic commits for planning
 
 **See**: `.gsd/protocols/ralph-loop.md` for complete protocol specification.
+
+
+---
+
+## Memory System Protocol
+
+**AFTER planning, document your thinking:**
+
+### Write Planning Journal
+
+Reflect on the planning process:
+
+```bash
+./.gsd/scripts/memory-add.sh journal --template
+```
+
+**Include**:
+- Planning approach
+- Challenges in breaking down the work
+- Assumptions made
+- Risks identified
+- Observations about requirements
+- Advice for execution phase
+
+### Search for Related Plans
+
+**BEFORE planning, check memory:**
+
+```bash
+# Search for similar planning sessions
+./.gsd/scripts/memory-search.sh "planning" --type journal
+
+# Search for related decisions
+./.gsd/scripts/memory-search.sh "architecture" --type decision
+
+# Check for patterns
+./.gsd/scripts/memory-search.sh "user preferences" --type pattern
+```
+
+---
+
+**Remember**: Good planning considers past learnings. Use memory to inform your plans.

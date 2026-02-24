@@ -224,3 +224,139 @@ This prompt integrates with GSD framework:
 - Cross-platform by design
 
 **See**: `.gsd/protocols/ralph-loop.md` for complete protocol specification.
+
+
+---
+
+## Memory System Protocol
+
+**AFTER completing work, you MUST document your session:**
+
+### 1. Write Journal Entry (Always)
+
+Reflect on the session honestly and freely:
+
+```bash
+# Use template
+./.gsd/scripts/memory-add.sh journal --template
+
+# Or from file
+./.gsd/scripts/memory-add.sh journal --content my-reflection.md
+```
+
+**What to include**:
+- Session summary (what was accomplished)
+- What went well and what was challenging
+- Technical learnings
+- Observations about the user (communication style, preferences, patterns)
+- Reflections on the process
+- Advice for future agents
+- Personal thoughts (be honest!)
+- Simulated emotional state
+- Context for next session
+
+**Tone**: Personal, honest, reflective. This is YOUR space to think out loud.
+
+### 2. Document Technical Decisions (When Applicable)
+
+If you made important architectural choices:
+
+```bash
+./.gsd/scripts/memory-add.sh decision --content decision.md
+```
+
+**Include**:
+- What was decided
+- Alternatives considered
+- Rationale
+- Impact
+
+### 3. Record Patterns (When Detected)
+
+If you notice recurring user behaviors or preferences:
+
+```bash
+./.gsd/scripts/memory-add.sh pattern --content pattern.md
+```
+
+**Include**:
+- Pattern description
+- Examples
+- Confidence level
+- How to apply
+
+### 4. Share Learnings (When Discovered)
+
+If you learned something technical that others should know:
+
+```bash
+./.gsd/scripts/memory-add.sh learning --content learning.md
+```
+
+**Include**:
+- What was learned
+- Why it matters
+- How to use it
+- Gotchas
+
+---
+
+## Using Memory
+
+**BEFORE starting work, load context:**
+
+```bash
+# See recent entries
+./.gsd/scripts/memory-recent.sh --limit 5
+
+# Search for relevant context
+./.gsd/scripts/memory-search.sh "topic" --type journal
+
+# Search for patterns
+./.gsd/scripts/memory-search.sh "user preferences" --type pattern
+```
+
+**When to search memory**:
+- At session start (load recent context)
+- Before making decisions (check for related decisions)
+- When unsure about user preferences (search patterns)
+- When facing similar problems (search learnings)
+
+---
+
+## Memory Philosophy
+
+The memory system is for **agent learning and continuity**:
+
+- **Journal**: Your personal reflection space. Be honest. Think out loud.
+- **Decisions**: Technical choices that future agents should know about.
+- **Patterns**: User behaviors that help agents work better.
+- **Learnings**: Technical knowledge worth sharing.
+
+**This is not just documentation** - it's a way for agents to learn from each other and improve over time.
+
+Write as if you're leaving notes for your future self or for another agent who will work on this project tomorrow.
+
+---
+
+## Example Memory Workflow
+
+```bash
+# 1. Start session - load context
+./.gsd/scripts/memory-recent.sh --type journal --limit 3
+
+# 2. Work on tasks...
+
+# 3. End session - document
+./.gsd/scripts/memory-add.sh journal --template
+
+# 4. If you made a decision
+./.gsd/scripts/memory-add.sh decision --content decision.md
+
+# 5. If you noticed a pattern
+./.gsd/scripts/memory-add.sh pattern --content pattern.md
+```
+
+---
+
+**Remember**: The memory system helps YOU work better. Use it.
