@@ -10,13 +10,16 @@ param(
     [string]$From,
     [string]$To,
     [int]$Limit = 10,
+    [switch]$External,
+    [switch]$All,
     [switch]$Help
 )
 
 $ErrorActionPreference = "Stop"
 
 # Configuration
-$DB_PATH = ".gsd/memory/index.db"
+$DB_PATH = ".gsd/memory/.index/memory.db"
+$EXTERNAL_DB_PATH = ".gsd/memory/.index/external.db"
 $MEMORY_DIR = ".gsd/memory"
 
 # Usage
@@ -32,11 +35,19 @@ OPTIONS:
     -From DATE          Filter from date (YYYY-MM-DD)
     -To DATE            Filter to date (YYYY-MM-DD)
     -Limit N            Limit results (default: 10)
+    -External           Search external knowledge base only
+    -All                Search both GSD memory and external sources
     -Help               Show this help
 
 EXAMPLES:
-    # Search all
+    # Search GSD memory (default)
     .\memory-search.ps1 "user communication"
+
+    # Search external knowledge base
+    .\memory-search.ps1 "obsidian notes" -External
+
+    # Search everything
+    .\memory-search.ps1 "project documentation" -All
 
     # Search journal only
     .\memory-search.ps1 "migration" -Type journal
@@ -48,6 +59,40 @@ EXAMPLES:
     .\memory-search.ps1 "decision" -Limit 5
 
 "@
+}
+
+# Search external knowledge base
+function Search-External {
+    param(
+        [string]$Query,
+        [int]$Limit
+    )
+    
+    if (-not (Test-Path $EXTERNAL_DB_PATH)) {
+        Write-Host "External index not found. Run memory-index-external.ps1 first." -ForegroundColor Yellow
+        return
+    }
+    
+    $sql = @"
+SELECT 
+    filename,
+    source,
+    snippet(documents, 2, '<mark>', '</mark>', '...', 64) as snippet
+FROM documents
+WHERE content MATCH '$Query'
+ORDER BY rank
+LIMIT $Limit;
+"@
+    
+    $results = $sql | sqlite3 $EXTERNAL_DB_PATH
+    
+    if ($results) {
+        Write-Host "External Knowledge Base Results:" -ForegroundColor Cyan
+        Write-Host ""
+        Write-Host $results
+    } else {
+        Write-Host "No results found in external sources" -ForegroundColor Yellow
+    }
 }
 
 # Search with SQLite FTS5
@@ -129,17 +174,44 @@ if ($Help) {
     exit 0
 }
 
-# Check if SQLite is available and database exists
+# Check if SQLite is available
 $hasSqlite = $null -ne (Get-Command sqlite3 -ErrorAction SilentlyContinue)
-$hasDatabase = Test-Path $DB_PATH
 
-if ($hasSqlite -and $hasDatabase) {
-    Write-Host "Searching with SQLite FTS5..." -ForegroundColor Blue
-    Write-Host ""
-    Search-WithSqlite -Query $Query -Type $Type -FromDate $From -ToDate $To -Limit $Limit
-}
-else {
+if (-not $hasSqlite) {
     Write-Host "SQLite not available, using Select-String..." -ForegroundColor Yellow
     Write-Host ""
     Search-WithSelectString -Query $Query -Type $Type -Limit $Limit
+    exit 0
+}
+
+# Determine what to search
+if ($External) {
+    # External only
+    Search-External -Query $Query -Limit $Limit
+}
+elseif ($All) {
+    # Both GSD memory and external
+    if (Test-Path $DB_PATH) {
+        Write-Host "=== GSD Memory ===" -ForegroundColor Cyan
+        Write-Host ""
+        Search-WithSqlite -Query $Query -Type $Type -FromDate $From -ToDate $To -Limit $Limit
+        Write-Host ""
+        Write-Host ""
+    }
+    
+    if (Test-Path $EXTERNAL_DB_PATH) {
+        Write-Host "=== External Knowledge Base ===" -ForegroundColor Cyan
+        Write-Host ""
+        Search-External -Query $Query -Limit $Limit
+    }
+}
+else {
+    # GSD memory only (default)
+    if (Test-Path $DB_PATH) {
+        Write-Host "Searching GSD memory..." -ForegroundColor Blue
+        Write-Host ""
+        Search-WithSqlite -Query $Query -Type $Type -FromDate $From -ToDate $To -Limit $Limit
+    } else {
+        Write-Host "GSD memory index not found. Run memory-index.ps1 first." -ForegroundColor Yellow
+    }
 }
