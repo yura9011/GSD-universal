@@ -54,3 +54,7 @@ __pycache__/
 *.tmp
 *.temp
 .cache/
+
+# Memory system indexes (generated, not source)
+.gsd/memory/.index/*.db
+.gsd/memory/.index/*.json
